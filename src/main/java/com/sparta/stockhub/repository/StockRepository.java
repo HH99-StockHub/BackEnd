@@ -1,4 +1,10 @@
 package com.sparta.stockhub.repository;
 
-public interface StockRepository {
+import com.sparta.stockhub.domain.Stock;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface StockRepository extends JpaRepository<Stock, Long> {
+    Optional<Stock> findByStockName(String stockName);
 }
