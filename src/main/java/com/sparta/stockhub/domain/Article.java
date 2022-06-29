@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -61,6 +62,10 @@ public class Article extends Timestamped {
     @OneToMany(cascade = CascadeType.ALL)
     private List<VoteDown> voteDownList;
 
+    @Column
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Comment> commentList;
+
     @Column // 조회수
     int viewCount;
 
@@ -69,4 +74,26 @@ public class Article extends Timestamped {
 
     @Column // 수익왕 게시판 등록 여부
     boolean richList;
+
+    public Article(Long userId, String articleTitle, String stockName, int stockPriceFirst, int stockPriceLast,
+                   String point1, String content1, String point2, String content2, String point3, String content3) {
+        this.userId = userId;
+        this.articleTitle = articleTitle;
+        this.stockName = stockName;
+        this.stockPriceFirst = stockPriceFirst;
+        this.stockPriceLast = stockPriceLast;
+        this.stockReturn = 0.0;
+        this.point1 = point1;
+        this.content1 = content1;
+        this.point2 = point2;
+        this.content2 = content2;
+        this.point3 = point3;
+        this.content3 = content3;
+        this.voteUpList = new ArrayList<>();
+        this.voteDownList = new ArrayList<>();
+        this.commentList = new ArrayList<>();
+        this.viewCount = 0;
+        this.popularList = false;
+        this.richList = false;
+    }
 }
