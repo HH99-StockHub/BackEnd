@@ -17,10 +17,7 @@ public class User {
     private Long userId;
 
     @Column(nullable = false)
-    private Long kakaoId;
-
-    @Column(nullable = false)
-    private String username;
+    private String username; // 카카오 로그인 정보에 담긴 "id"
 
     @Column(nullable = false)
     private String password;
@@ -31,8 +28,7 @@ public class User {
     @Column(nullable = false)
     private String profileImage;
 
-    public User(Long kakaoId, String username, String password, String nickname, String profileImage) {
-        this.kakaoId = kakaoId;
+    public User(String username, String password, String nickname, String profileImage) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;

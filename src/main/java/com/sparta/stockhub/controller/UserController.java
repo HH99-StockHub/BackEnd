@@ -7,22 +7,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Controller
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    // 로그인 뷰
-    @GetMapping("/")
-    public String login() {
-        return "index";
-    }
-
     // 카카오 로그인
     @GetMapping("/user/kakao/callback")
-    public String kakaoLogin(@RequestParam String code) throws JsonProcessingException {
-        userService.kakaoLogin(code);
-        return "redirect:/";
+    public void kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        userService.kakaoLogin(code, response);
     }
 }

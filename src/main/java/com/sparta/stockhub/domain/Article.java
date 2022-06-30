@@ -27,13 +27,13 @@ public class Article extends Timestamped {
     @Column(nullable = false)
     String stockName;
 
-    @Column(nullable = false) // 글 작성 당시의 주식 가격
+    @Column // 글 작성 당시의 주식 가격
     int stockPriceFirst;
 
-    @Column(nullable = false) // 조회 시점의 주식 가격
+    @Column // 조회 시점의 주식 가격
     int stockPriceLast;
 
-    @Column(nullable = false) // 글 작성 이후의 주식 수익률
+    @Column // 글 작성 이후의 주식 수익률
     double stockReturn;
 
     @Column(nullable = false)

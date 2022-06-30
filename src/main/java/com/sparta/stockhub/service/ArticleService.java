@@ -41,16 +41,20 @@ public class ArticleService {
         if (articleTitle.length() > 40) throw new IllegalArgumentException("제목은 40자 이내로 작성해주세요.");
         if (point1.length() > 40) throw new IllegalArgumentException("투자포인트는 40자 이내로 작성해주세요.");
         if (content1.length() > 800) throw new IllegalArgumentException("세부 내용은 800자 이내로 작성해주세요.");
-        if (point2.length() > 40) throw new IllegalArgumentException("투자포인트는 40자 이내로 작성해주세요.");
-        if (content2.length() > 800) throw new IllegalArgumentException("세부 내용은 800자 이내로 작성해주세요.");
-        if (point3.length() > 40) throw new IllegalArgumentException("투자포인트는 40자 이내로 작성해주세요.");
-        if (content3.length() > 800) throw new IllegalArgumentException("세부 내용은 800자 이내로 작성해주세요.");
+        if (point2 != null && content2 != null) {
+            if (point2.length() > 40) throw new IllegalArgumentException("투자포인트는 40자 이내로 작성해주세요.");
+            if (content2.length() > 800) throw new IllegalArgumentException("세부 내용은 800자 이내로 작성해주세요.");
+        }
+        if (point3 != null && content3 != null) {
+            if (point3.length() > 40) throw new IllegalArgumentException("투자포인트는 40자 이내로 작성해주세요.");
+            if (content3.length() > 800) throw new IllegalArgumentException("세부 내용은 800자 이내로 작성해주세요.");
+        }
 
-        Stock stock = stockService.getStockInfo(stockName); // 주식 종목 정보 조회
-        String stockCode = stock.getStockCode();
-        int stockPrice = stock.getStockPrice();
+//        Stock stock = stockService.getStockInfo(stockName); // 주식 종목 정보 조회
+//        String stockCode = stock.getStockCode();
+//        int stockPrice = stock.getStockPrice();
 
-        Article article = new Article(userId, articleTitle, stockName, stockPrice, stockPrice,
+        Article article = new Article(userId, articleTitle, stockName, 0, 0,
         point1, content1, point2, content2, point3, content3);
 
         articleRepository.save(article);
