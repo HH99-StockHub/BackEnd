@@ -78,12 +78,12 @@ public class UserService {
     private User getKakaoUserInfo(String accessToken) throws JsonProcessingException {
 
         // HTTP Header 생성
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + accessToken);
-        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        HttpHeaders header = new HttpHeaders();
+        header.add("Authorization", "Bearer " + accessToken);
+        header.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
         // HTTP 요청 보내기
-        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
+        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(header);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
                 "https://kapi.kakao.com/v2/user/me",
@@ -96,10 +96,8 @@ public class UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
         String username = jsonNode.get("id").asText();
-        String nickname = jsonNode.get("properties")
-                .get("nickname").asText();
-        String profileImage = jsonNode.get("properties")
-                .get("profile_image").asText();
+        String nickname = jsonNode.get("properties").get("nickname").asText();
+        String profileImage = jsonNode.get("properties").get("profile_image").asText();
 
         // 카카오로그인을 처음 한 경우 UserRepository에 저장
         User user = userRepository.findByUsername(username).orElse(null);
