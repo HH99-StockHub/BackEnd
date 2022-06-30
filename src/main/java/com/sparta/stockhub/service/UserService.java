@@ -6,12 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.stockhub.domain.User;
 import com.sparta.stockhub.dto.responseDto.UserResponseDto;
 import com.sparta.stockhub.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -20,26 +19,18 @@ import org.springframework.web.client.RestTemplate;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
+    // 카카오 로그인
     public void kakaoLogin(String code) throws JsonProcessingException {
-        // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
-
-        // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
         UserResponseDto kakaoUserInfo = getKakaoUserInfo(accessToken);
     }
 
-    // 1. "인가 코드"로 "액세스 토큰" 요청
+    // 백에서 카카오서버로 "인가 코드"를 활용해 "액세스 토큰" 요청
     private String getAccessToken(String code) throws JsonProcessingException {
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
@@ -70,7 +61,7 @@ public class UserService {
         return jsonNode.get("access_token").asText();
     }
 
-    // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
+    // "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
     private UserResponseDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();

@@ -28,19 +28,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests()
-                // 회원 관련 API 전부 허용
-                .antMatchers("/user/**").permitAll()
+                .antMatchers("/**").permitAll()
                 // 어떤 요청이든 '인증'
                 .anyRequest().authenticated()
                 .and()
-                // 로그인 기능 허용
-                .formLogin()
-                .loginPage("/user/login") // 로그인 뷰
-                .loginProcessingUrl("/user/login") // 로그인 처리
-                .defaultSuccessUrl("/") // 로그인 성공
-                .failureUrl("/user/login?error") // 로그인 실패
-                .permitAll()
-                .and()
+//                // 로그인 기능 허용
+//                .formLogin()
+//                .loginPage("/user/login") // 로그인 뷰
+//                .loginProcessingUrl("/user/login") // 로그인 처리
+//                .defaultSuccessUrl("/") // 로그인 성공
+//                .failureUrl("/user/login?error") // 로그인 실패
+//                .permitAll()
+//                .and()
                 // 로그아웃 기능 허용
                 .logout()
                 .logoutUrl("/user/logout") // 로그아웃

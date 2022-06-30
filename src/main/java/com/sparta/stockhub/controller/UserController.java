@@ -14,9 +14,9 @@ public class UserController {
     private final UserService userService;
 
     // 로그인 뷰
-    @GetMapping("/user/login")
+    @GetMapping("/")
     public String login() {
-        return "login";
+        return "index";
     }
 
     // 카카오 로그인
