@@ -4,6 +4,8 @@ import com.sparta.stockhub.domain.Article;
 import com.sparta.stockhub.domain.Comment;
 import com.sparta.stockhub.domain.User;
 import com.sparta.stockhub.dto.responseDto.CommentResponseDto;
+import com.sparta.stockhub.exceptionHandler.CustomException;
+import com.sparta.stockhub.exceptionHandler.ErrorCode;
 import com.sparta.stockhub.repository.ArticleRepository;
 import com.sparta.stockhub.repository.CommentRepository;
 import com.sparta.stockhub.repository.UserRepository;
@@ -28,7 +30,7 @@ public class CommentService {
         List<Comment> commentList = commentRepository.findByCommentIdOrderByCreatedAtDesc(articleId);
         for (int i = 0; i < commentList.size(); i++) {
             User user = userRepository.findById(commentList.get(i).getUserId()).orElseThrow(
-                    ()-> new NullPointerException("사용자가 존재하지 않습니다")
+                    ()-> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             CommentResponseDto responseDto = new CommentResponseDto(commentList.get(i), user);
             responseDtoList.add(responseDto);
@@ -40,10 +42,10 @@ public class CommentService {
     public void createComment(UserDetailsImpl userDetails, Long articleId, String comment) {
         Long loginId = userDetails.getUser().getUserId();
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
-                () -> new NullPointerException("게시글이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
-        if (comment.equals("")) throw new IllegalArgumentException("댓글 내용 작성이 필요합니다.");
-        if (comment.length() > 300) throw new IllegalArgumentException("댓글 내용은 300자 이내로 작성해주세요.");
+        if (comment.equals("")) throw new CustomException(ErrorCode.BAD_REQUEST_NOTWRITE);
+        if (comment.length() > 300) throw new CustomException(ErrorCode.BAD_REQUEST_COMMENTLENGTH);
         Comment newComment = new Comment(loginId, articleId, comment);
         commentRepository.save(newComment);
     }
@@ -52,9 +54,9 @@ public class CommentService {
     public void deleteComment(UserDetailsImpl userDetails, Long commentId) {
         Long loginId = userDetails.getUser().getUserId();
         Comment oldComment = commentRepository.findByCommentId(commentId).orElseThrow(
-                () -> new NullPointerException("댓글이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_COMMENT)
         );
-        if (loginId != oldComment.getUserId()) throw new IllegalArgumentException("댓글 삭제 권한이 없습니다.");
+        if (loginId != oldComment.getUserId()) throw new CustomException(ErrorCode.UNAUTHORIZED_NOTUSER);
 
         commentRepository.deleteByCommentId(commentId);
     }

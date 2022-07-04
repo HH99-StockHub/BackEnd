@@ -3,6 +3,8 @@ package com.sparta.stockhub.service;
 import com.sparta.stockhub.domain.*;
 import com.sparta.stockhub.dto.requestDto.ArticleRequestDto;
 import com.sparta.stockhub.dto.responseDto.ArticleResponseDto;
+import com.sparta.stockhub.exceptionHandler.CustomException;
+import com.sparta.stockhub.exceptionHandler.ErrorCode;
 import com.sparta.stockhub.repository.ArticleRepository;
 import com.sparta.stockhub.repository.VoteDownRepository;
 import com.sparta.stockhub.repository.VoteUpRepository;
@@ -34,20 +36,20 @@ public class ArticleService {
         String point3 = requestDto.getPoint3();
         String content3 = requestDto.getContent3();
 
-        if (articleTitle.equals("")) throw new IllegalArgumentException("제목 작성이 필요합니다.");
-        if (stockName.equals(null)) throw new IllegalArgumentException("종목 선택이 필요합니다.");
-        if (point1.equals("")) throw new IllegalArgumentException("투자포인트 작성이 필요합니다.");
-        if (content1.equals("")) throw new IllegalArgumentException("세부 내용 작성이 필요합니다.");
-        if (articleTitle.length() > 40) throw new IllegalArgumentException("제목은 40자 이내로 작성해주세요.");
-        if (point1.length() > 40) throw new IllegalArgumentException("투자포인트는 40자 이내로 작성해주세요.");
-        if (content1.length() > 800) throw new IllegalArgumentException("세부 내용은 800자 이내로 작성해주세요.");
+        if (articleTitle.equals("")) throw new CustomException(ErrorCode.BAD_REQUEST_NOTWRITE);
+        if (stockName.equals(null)) throw new CustomException(ErrorCode.BAD_REQUEST_STOCKNAME);
+        if (point1.equals("")) throw new CustomException(ErrorCode.BAD_REQUEST_NOTWRITE);
+        if (content1.equals("")) throw new CustomException(ErrorCode.BAD_REQUEST_NOTWRITE);
+        if (articleTitle.length() > 40) throw new CustomException(ErrorCode.BAD_REQUEST_TITLELENGTH);
+        if (point1.length() > 40) throw new CustomException(ErrorCode.BAD_REQUEST_POINTLENGTH);
+        if (content1.length() > 800) throw new CustomException(ErrorCode.BAD_REQUEST_CONTENTLENGTH);
         if (point2 != null && content2 != null) {
-            if (point2.length() > 40) throw new IllegalArgumentException("투자포인트는 40자 이내로 작성해주세요.");
-            if (content2.length() > 800) throw new IllegalArgumentException("세부 내용은 800자 이내로 작성해주세요.");
+            if (point2.length() > 40) throw new CustomException(ErrorCode.BAD_REQUEST_POINTLENGTH);
+            if (content2.length() > 800) throw new CustomException(ErrorCode.BAD_REQUEST_CONTENTLENGTH);
         }
         if (point3 != null && content3 != null) {
-            if (point3.length() > 40) throw new IllegalArgumentException("투자포인트는 40자 이내로 작성해주세요.");
-            if (content3.length() > 800) throw new IllegalArgumentException("세부 내용은 800자 이내로 작성해주세요.");
+            if (point3.length() > 40) throw new CustomException(ErrorCode.BAD_REQUEST_POINTLENGTH);
+            if (content3.length() > 800) throw new CustomException(ErrorCode.BAD_REQUEST_CONTENTLENGTH);
         }
 
 //        Stock stock = stockService.getStockInfo(stockName); // 주식 종목 정보 조회
@@ -63,7 +65,7 @@ public class ArticleService {
     // 게시글 내용 조회
     public ArticleResponseDto readArticle(Long articleId) {
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
-                () -> new NullPointerException("게시글이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
         int voteUpCount = countVoteUp(article);
         int voteDownCount = countVoteDown(article);
@@ -77,10 +79,10 @@ public class ArticleService {
         VoteUp oldVote = voteUpRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 찬성 투표를 했는지 여부 확인
         VoteDown oppositeVote = voteDownRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 반대 투표를 했는지 여부 확인
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
-                () -> new NullPointerException("게시글이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
         if (oldVote == null) {
-            if (loginId == article.getUserId()) throw new IllegalArgumentException("본인 게시글에 투표할 수 없습니다."); // 본인 게시글에 투표하려는 경우
+            if (loginId == article.getUserId()) throw new CustomException(ErrorCode.FORBIDDEN_MYARTICLEVOTE); // 본인 게시글에 투표하려는 경우
             else if (oppositeVote != null) {
                 VoteUp myVote = new VoteUp(articleId, loginId); // 이미 반대를 한 경우
                 voteUpRepository.save(myVote);
@@ -91,7 +93,7 @@ public class ArticleService {
                 voteUpRepository.save(myVote);
             }
         } else {
-            throw new IllegalArgumentException("이미 찬성 투표를 하였습니다."); // 이미 찬성을 한 경우
+            throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEUP); // 이미 찬성을 한 경우
         }
     }
 
@@ -101,10 +103,10 @@ public class ArticleService {
         VoteDown oldVote = voteDownRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 반대 투표를 했는지 여부 확인
         VoteUp oppositeVote = voteUpRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 찬성 투표를 했는지 여부 확인
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
-                () -> new NullPointerException("게시글이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
         if (oldVote == null) {
-            if (loginId == article.getUserId()) throw new IllegalArgumentException("본인 게시글에 투표할 수 없습니다."); // 본인 게시글에 투표하려는 경우
+            if (loginId == article.getUserId()) throw new CustomException(ErrorCode.FORBIDDEN_MYARTICLEVOTE); // 본인 게시글에 투표하려는 경우
             else if (oppositeVote != null) {
                 VoteDown myVote = new VoteDown(articleId, loginId); // 이미 찬성을 한 경우
                 voteDownRepository.save(myVote);
@@ -115,7 +117,7 @@ public class ArticleService {
                 voteDownRepository.save(myVote);
             }
         } else {
-            throw new IllegalArgumentException("이미 반대 푸툐를 하였습니다."); // 이미 반대를 한 경우
+            throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEDOWN); // 이미 반대를 한 경우
         }
 
     }
@@ -124,9 +126,9 @@ public class ArticleService {
     public void deleteArticle(UserDetailsImpl userDetails, Long articleId) {
         Long loginId = userDetails.getUser().getUserId();
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
-                () -> new NullPointerException("게시글이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
-        if (loginId != article.getUserId()) throw new IllegalArgumentException("게시글 삭제 권한이 없습니다.");
+        if (loginId != article.getUserId()) throw new CustomException(ErrorCode.UNAUTHORIZED_NOTUSER);
 
         articleRepository.deleteByArticleId(articleId);
     }

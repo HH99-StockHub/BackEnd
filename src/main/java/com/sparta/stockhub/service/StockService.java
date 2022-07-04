@@ -2,6 +2,8 @@ package com.sparta.stockhub.service;
 
 import com.sparta.stockhub.domain.Article;
 import com.sparta.stockhub.domain.Stock;
+import com.sparta.stockhub.exceptionHandler.CustomException;
+import com.sparta.stockhub.exceptionHandler.ErrorCode;
 import com.sparta.stockhub.repository.ArticleRepository;
 import com.sparta.stockhub.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,7 @@ public class StockService {
     // 주식 수익률 계산
     public double getStockReturn(Long articleId) {
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
-                () -> new NullPointerException("게시글이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
         int stockPriceFirst = article.getStockPriceFirst();
         int stockPriceLast = 0; // 주식 현재가 조회 추가 필요

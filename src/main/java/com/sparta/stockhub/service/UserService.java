@@ -34,10 +34,8 @@ public class UserService {
     public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
-
         // 2. "액세스 토큰"으로 카카오 로그인 정보 호출
         User user = getKakaoUserInfo(accessToken);
-
         // 3. JWT 형식의 토큰 생성
         createJwt(user, response);
     }
@@ -48,13 +46,13 @@ public class UserService {
         // HTTP Header 생성
         HttpHeaders header = new HttpHeaders();
         header.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", "12c4e96969c4b50ad263268577cdcb76");
-        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+        body.add("client_id", "8cc8ee200c58b6123c684bbafe1370e6");
+        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
         body.add("code", code);
+
 
         // HTTP 요청
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
@@ -106,7 +104,6 @@ public class UserService {
             user = new User(username, password, nickname, profileImage);
             userRepository.save(user);
         }
-
         return user;
     }
 
@@ -121,6 +118,7 @@ public class UserService {
         String token = JwtTokenUtils.generateJwtToken(userDetailsJwt);
 
         response.addHeader("Authorization", "BEARER " + token);
+        System.out.println("BEARER " + token);
         response.addHeader("userId", String.valueOf(user.getUserId()));
     }
 }
