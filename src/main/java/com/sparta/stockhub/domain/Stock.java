@@ -3,31 +3,28 @@ package com.sparta.stockhub.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
+import javax.persistence.Id;
 
-@Entity
+@Document(collection = "stocks")
 @Getter
 @Setter
 @NoArgsConstructor
 public class Stock {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long stockId;
+    private String id;
 
-    @Column(nullable = false)
-    String stockCode;
+    private String stockCode;
 
-    @Column(nullable = false)
-    String stockName;
+    private String stockName;
 
-    @Column(nullable = false)
-    int stockPrice;
+    private int price;
 
-    public Stock(String stockCode, String stockName, int stockPrice) {
+    public Stock(String stockCode, String stockName, int price) {
         this.stockCode = stockCode;
         this.stockName = stockName;
-        this.stockPrice = stockPrice;
+        this.price = price;
     }
 }
