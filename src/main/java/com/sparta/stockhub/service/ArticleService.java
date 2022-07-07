@@ -194,6 +194,7 @@ public class ArticleService {
     }
 
     // 게시글: 게시글 내용 조회
+    @Transactional
     public ArticleResponseDto readArticle(Long articleId) {
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
                 () -> new NullPointerException("게시글이 존재하지 않습니다.")
@@ -202,6 +203,8 @@ public class ArticleService {
                 () -> new NullPointerException("유저가 존재하지 않습니다.")
         );
         int commentCount = countComment(article);
+        article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
+        articleRepository.save(article);
         ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount);
         return responseDto;
     }
@@ -223,11 +226,13 @@ public class ArticleService {
                 voteDownRepository.delete(oppositeVote);
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
                 article.setVoteDownCount(article.getVoteDownCount() - 1);
+                checkPopularList(article);
             }
             else {
                 VoteUp myVote = new VoteUp(articleId, loginId); // 해당 게시글에 투표를 처음 하는 경우
                 voteUpRepository.save(myVote);
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
+                checkPopularList(article);
             }
         } else {
             throw new IllegalArgumentException("이미 찬성 투표를 하였습니다."); // 이미 찬성을 한 경우
@@ -251,11 +256,13 @@ public class ArticleService {
                 voteUpRepository.delete(oppositeVote);
                 article.setVoteDownCount(article.getVoteDownCount() + 1);
                 article.setVoteUpCount(article.getVoteUpCount() - 1);
+                checkPopularList(article);
             }
             else {
                 VoteDown myVote = new VoteDown(articleId, loginId); // 해당 게시글에 투표를 처음 하는 경우
                 voteDownRepository.save(myVote);
                 article.setVoteDownCount(article.getVoteDownCount() + 1);
+                checkPopularList(article);
             }
         } else {
             throw new IllegalArgumentException("이미 반대 푸툐를 하였습니다."); // 이미 반대를 한 경우
@@ -307,7 +314,8 @@ public class ArticleService {
     // 인기글 등록/해제 검사
     @Transactional
     public void checkPopularList(Article article) {
-        if (article.getVoteUpCount() >= 5 && article.getVoteUpCount() / article.getVoteDownCount() >= 2) article.setPopularList(true);
+        if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0) article.setPopularList(true);
+        else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2) article.setPopularList(true);
         else article.setPopularList(false);
         articleRepository.save(article);
     }
