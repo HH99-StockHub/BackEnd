@@ -72,8 +72,8 @@ public class ArticleController {
 
     // 게시글: 게시글 내용 조회
     @GetMapping("/articles/{articleId}")
-    public ArticleResponseDto readArticle(@PathVariable Long articleId) {
-        return articleService.readArticle(articleId);
+    public ArticleResponseDto readArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId) {
+        return articleService.readArticle(userDetails, articleId);
     }
 
     // 게시글: 찬성 투표

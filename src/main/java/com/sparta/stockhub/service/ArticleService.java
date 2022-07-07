@@ -195,16 +195,18 @@ public class ArticleService {
 
     // 게시글: 게시글 내용 조회
     @Transactional
-    public ArticleResponseDto readArticle(Long articleId) {
+    public ArticleResponseDto readArticle(UserDetailsImpl userDetails, Long articleId) {
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
                 () -> new NullPointerException("게시글이 존재하지 않습니다.")
         );
         User user = userRepository.findById(article.getUserId()).orElseThrow(
                 () -> new NullPointerException("유저가 존재하지 않습니다.")
         );
-        int commentCount = countComment(article);
         article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
-        ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount);
+        int commentCount = countComment(article);
+        int voteSign = 0;
+        if(userDetails != null) voteSign = checkVoteSign(userDetails.getUser(), article);
+        ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount, voteSign);
         return responseDto;
     }
 
@@ -308,6 +310,13 @@ public class ArticleService {
         List<Comment> commentList = commentRepository.findAllByArticleId(article.getArticleId());
         int commentCount = commentList.size();
         return commentCount;
+    }
+
+    // 게시글 찬성/반대 투표 검사
+    public int checkVoteSign(User user, Article article) {
+        if (voteUpRepository.findByUserIdAndArticleId(user.getUserId(), article.getArticleId()).isPresent()) return 1;
+        else if (voteDownRepository.findByUserIdAndArticleId(user.getUserId(), article.getArticleId()).isPresent()) return -1;
+        else return 0;
     }
 
     // 인기글 등록/해제 검사
