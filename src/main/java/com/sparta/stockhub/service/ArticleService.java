@@ -64,7 +64,7 @@ public class ArticleService {
 
     // 메인: 전체 게시글 목록 조회
     public List<ArticleListResponseDto> readMainArticles() {
-        List<Article> articleList = articleRepository.findAllOrderByCreatedAtDesc();
+        List<Article> articleList = articleRepository.findAllByOrderByCreatedAtDesc();
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 10) break; // 메인 페이지에 내릴 때는 최신 게시글 10개만 반환
@@ -139,7 +139,7 @@ public class ArticleService {
 
     // 전체 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
     public List<ArticleListResponseDto> readAllArticles() {
-        List<Article> articleList = articleRepository.findAllOrderByCreatedAtDesc();
+        List<Article> articleList = articleRepository.findAllByOrderByCreatedAtDesc();
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(

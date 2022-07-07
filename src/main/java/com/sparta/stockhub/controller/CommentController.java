@@ -28,7 +28,7 @@ public class CommentController {
     }
 
     // 게시글: 댓글 삭제
-    @DeleteMapping("/comments/{commendId}")
+    @DeleteMapping("/comments/{commentId}")
     public void deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId) {
         if (userDetails != null) commentService.deleteComment(userDetails, commentId);
     }

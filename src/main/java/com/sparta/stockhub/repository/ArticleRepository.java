@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     Optional<Article> findByArticleId(Long articleId);
 
-    List<Article> findAllOrderByCreatedAtDesc();
+    List<Article> findAllByOrderByCreatedAtDesc();
 
     List<Article> findAllByPopularListOrderByVoteUpCountDesc(boolean popularList);
 
