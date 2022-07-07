@@ -204,7 +204,6 @@ public class ArticleService {
         );
         int commentCount = countComment(article);
         article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
-        articleRepository.save(article);
         ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount);
         return responseDto;
     }
@@ -317,7 +316,6 @@ public class ArticleService {
         if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0) article.setPopularList(true);
         else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2) article.setPopularList(true);
         else article.setPopularList(false);
-        articleRepository.save(article);
     }
 
     // 게시글 등록 종목 현재가 및 수익률 업데이트 //////////////////// 스케쥴러 적용 필요
@@ -327,7 +325,6 @@ public class ArticleService {
         for (int i = 0; i < articleList.size(); i++) {
             articleList.get(i).setStockPriceLast(stockService.getStockPrice(articleList.get(i).getStockName()));
             articleList.get(i).setStockReturn(stockService.getStockReturn(articleList.get(i).getStockPriceFirst(), articleList.get(i).getStockPriceLast()));
-            articleRepository.save(articleList.get(i));
         }
     }
 
@@ -336,6 +333,5 @@ public class ArticleService {
     public void checkRichList(Article article) {
         if (article.getStockReturn() >= 0.15) article.setRichList(true);
         else article.setRichList(false);
-        articleRepository.save(article);
     }
 }
