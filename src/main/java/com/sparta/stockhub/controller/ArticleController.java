@@ -16,10 +16,13 @@ public class ArticleController {
 
     // 게시글 작성
     @PostMapping("/article")
-    public void createArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ArticleRequestDto requestDto) {
+    public boolean createArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ArticleRequestDto requestDto) {
+        if(articleService.cleanArticle(requestDto)==false){
+            return false;
+        }
         if (userDetails != null) {
             articleService.createArticle(userDetails, requestDto);
-        }
+        }return true;
     }
 
     // 게시글 내용 조회

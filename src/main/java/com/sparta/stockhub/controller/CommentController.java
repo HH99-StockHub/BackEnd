@@ -18,17 +18,22 @@ public class CommentController {
     // 댓글 목록 조회
     @GetMapping("/articles/{articleId}/comments")
     public List<CommentResponseDto> getComments(@PathVariable Long articleId) {
+
         return commentService.getComments(articleId);
     }
 
     // 댓글 작성
     @PostMapping("/articles/{articleId}/comment")
-    public void createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId, @RequestBody String comment) {
+    public boolean createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId, @RequestBody String comment) {
+        if(commentService.cleanCommnet(comment)==false){
+            return false;
+        }
         if (userDetails != null) commentService.createComment(userDetails, articleId, comment);
+        return true;
     }
 
     // 댓글 삭제
-    @DeleteMapping("/comments/{commendId}")
+    @DeleteMapping("/comments/{commentId}")/*commend 를 comment로 바꿈*/
     public void deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId) {
         if (userDetails != null) commentService.deleteComment(userDetails, commentId);
     }
