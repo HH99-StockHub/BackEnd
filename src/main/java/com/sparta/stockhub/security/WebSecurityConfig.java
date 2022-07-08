@@ -53,8 +53,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(corsFilter)
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
-                .antMatchers("/user/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest()
+                .permitAll()
                 .and()
                 .formLogin()
                 .loginPage("/")
@@ -73,11 +73,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         List<String> skipPathList = new ArrayList<>();
 
+        skipPathList.add("GET,/???");
         skipPathList.add("GET,/**");
         skipPathList.add("GET,/");
+        skipPathList.add("POST,/user/kakao/callback");
+        skipPathList.add("GET,/articles/**");
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");
-        skipPathList.add("POST,/user/kakao/callback");
+        skipPathList.add("OPTIONS,/");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(skipPathList, "/**");
 

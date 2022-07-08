@@ -120,5 +120,6 @@ public class UserService {
         response.addHeader("Authorization", "BEARER " + token);
         System.out.println("BEARER " + token);
         response.addHeader("userId", String.valueOf(user.getUserId()));
+        response.addHeader("profileImage", user.getProfileImage());
     }
 }
