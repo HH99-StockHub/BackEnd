@@ -1,8 +1,10 @@
 package com.sparta.stockhub.service;
 
 import com.sparta.stockhub.domain.*;
+
 import com.sparta.stockhub.dto.requestDto.ArticleRequestDto;
 import com.sparta.stockhub.dto.responseDto.ArticleResponseDto;
+
 import com.sparta.stockhub.repository.ArticleRepository;
 import com.sparta.stockhub.repository.VoteDownRepository;
 import com.sparta.stockhub.repository.VoteUpRepository;
@@ -10,8 +12,10 @@ import com.sparta.stockhub.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import com.google.common.collect.Lists;
 
 @Service
 @RequiredArgsConstructor
@@ -158,7 +162,7 @@ public class ArticleService {
 
         String contents = articleTitle + stockName + point1 + content1 + point2 + content2 + point3 + content3;
 
-        String[] words = {"시발","병신","개같이","멸망","18년","18놈","18새끼","ㄱㅐㅅㅐㄲl",
+        String[] words = {"시발", "병신", "개같이", "멸망", "18년", "18놈", "18새끼", "ㄱㅐㅅㅐㄲl",
                 "ㄱㅐㅈㅏ","가슴만져","가슴빨아","가슴빨어","가슴조물락","가슴주물럭",
                 "가슴쪼물딱","가슴쪼물락","가슴핧아","가슴핧어","강간","개가튼년","개가튼뇬",
                 "개같은년","개걸레","개고치", "개너미", "개넘", "개년", "개놈", "개늠", "개똥",
@@ -245,5 +249,83 @@ public class ArticleService {
                 return false;
             }
         }return true;
+    }
+
+    public List<Article> searchArticle(String keywords, Long searchtype) {
+        /*
+        0 + 전체검색
+        1 = 제목 ArticleTitle
+        2 = 종목이름 stockName
+        3 = 투자 포인트 point
+        4 = 내용 content
+        */
+
+        String[] keywordsSplitted = keywords.split(" ");
+        Set<Article> containingAnyKeywordsArticleSet = new HashSet<>();
+
+        if(searchtype==0) {
+
+            for (String keyword : keywordsSplitted) {
+                System.out.println(keyword);
+
+                List<Article> containingKeywordArticleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3Containing(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
+                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+
+
+            }
+            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+            return resultList;
+        } else if(searchtype==1){
+
+            for (String keyword : keywordsSplitted) {
+                System.out.println(keyword);
+
+                List<Article> containingKeywordArticleList = articleRepository.findAllByArticleTitleContaining(keyword);
+                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+
+
+            }
+            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+            return resultList;
+
+
+        }else if(searchtype==2){
+
+            for (String keyword : keywordsSplitted) {
+                System.out.println(keyword);
+
+                List<Article> containingKeywordArticleList = articleRepository.findAllByStockNameContaining(keyword);
+                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+
+
+            }
+            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+            return resultList;
+
+
+        }else if(searchtype==3){
+
+            for (String keyword : keywordsSplitted) {
+                System.out.println(keyword);
+
+                List<Article> containingKeywordArticleList = articleRepository.findAllByPoint1ContainingOrPoint2ContainingOrPoint3Containing(keyword, keyword, keyword);
+                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+
+
+            }
+            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+            return resultList;
+
+        }
+        for (String keyword : keywordsSplitted) {
+            System.out.println(keyword);
+
+            List<Article> containingKeywordArticleList = articleRepository.findAllByContent1ContainingOrContent2ContainingOrContent3Containing(keyword, keyword, keyword);
+            containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+
+
+        }
+        List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+        return resultList;
     }
 }
