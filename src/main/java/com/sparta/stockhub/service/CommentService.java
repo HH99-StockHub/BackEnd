@@ -11,6 +11,7 @@ import com.sparta.stockhub.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,13 +24,13 @@ public class CommentService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
 
-    // 댓글 목록 조회
-    public List<CommentResponseDto> getComments(Long articleId) {
+    // 게시글: 댓글 목록 조회
+    public List<CommentResponseDto> readComments(Long articleId) {
         List<CommentResponseDto> responseDtoList = new ArrayList<>();
-        List<Comment> commentList = commentRepository.findByCommentIdOrderByCreatedAtDesc(articleId);
+        List<Comment> commentList = commentRepository.findAllByArticleIdOrderByCreatedAtDesc(articleId);
         for (int i = 0; i < commentList.size(); i++) {
             User user = userRepository.findById(commentList.get(i).getUserId()).orElseThrow(
-                    ()-> new NullPointerException("사용자가 존재하지 않습니다")
+                    ()-> new NullPointerException("유저가 존재하지 않습니다")
             );
             CommentResponseDto responseDto = new CommentResponseDto(commentList.get(i), user);
             responseDtoList.add(responseDto);
@@ -37,7 +38,7 @@ public class CommentService {
         return responseDtoList;
     }
 
-    // 댓글 작성
+    // 게시글: 댓글 작성
     public void createComment(UserDetailsImpl userDetails, Long articleId, String comment) {
         Long loginId = userDetails.getUser().getUserId();
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
@@ -49,15 +50,18 @@ public class CommentService {
         commentRepository.save(newComment);
     }
 
-    // 댓글 삭제
+    // 게시글: 댓글 삭제
+    @Transactional
     public void deleteComment(UserDetailsImpl userDetails, Long commentId) {
         Long loginId = userDetails.getUser().getUserId();
         Comment oldComment = commentRepository.findByCommentId(commentId).orElseThrow(
                 () -> new NullPointerException("댓글이 존재하지 않습니다.")
         );
-        if (!Objects.equals(loginId, oldComment.getUserId())) throw new IllegalArgumentException("댓글 삭제 권한이 없습니다.");
-//이부분 인텔리제이가 바꾸라고 해서 != 을 !.equals()로 바꿈
-        commentRepository.deleteByCommentId(commentId);
+
+        if (loginId != oldComment.getUserId()) throw new IllegalArgumentException("댓글 삭제 권한이 없습니다.");
+
+        commentRepository.deleteById(commentId);
+
     }
 
     public boolean cleanCommnet(String comment) {

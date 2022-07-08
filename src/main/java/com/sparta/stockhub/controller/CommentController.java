@@ -15,14 +15,15 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    // 댓글 목록 조회
+    // 게시글: 댓글 목록 조회
     @GetMapping("/articles/{articleId}/comments")
-    public List<CommentResponseDto> getComments(@PathVariable Long articleId) {
 
-        return commentService.getComments(articleId);
+    public List<CommentResponseDto> readComments(@PathVariable Long articleId) {
+        return commentService.readComments(articleId);
+
     }
 
-    // 댓글 작성
+    // 게시글: 댓글 작성
     @PostMapping("/articles/{articleId}/comment")
     public boolean createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId, @RequestBody String comment) {
         if(commentService.cleanCommnet(comment)==false){
@@ -32,8 +33,9 @@ public class CommentController {
         return true;
     }
 
-    // 댓글 삭제
-    @DeleteMapping("/comments/{commentId}")/*commend 를 comment로 바꿈*/
+    // 게시글: 댓글 삭제
+    @DeleteMapping("/comments/{commentId}")
+
     public void deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId) {
         if (userDetails != null) commentService.deleteComment(userDetails, commentId);
     }

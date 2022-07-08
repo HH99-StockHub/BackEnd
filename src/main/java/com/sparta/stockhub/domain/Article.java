@@ -55,16 +55,10 @@ public class Article extends Timestamped {
     String content3;
 
     @Column
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<VoteUp> voteUpList;
+    int voteUpCount;
 
     @Column
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<VoteDown> voteDownList;
-
-    @Column
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Comment> commentList;
+    int voteDownCount;
 
     @Column // 조회수
     int viewCount;
@@ -75,23 +69,22 @@ public class Article extends Timestamped {
     @Column // 수익왕 게시판 등록 여부
     boolean richList;
 
-    public Article(Long userId, String articleTitle, String stockName, int stockPriceFirst, int stockPriceLast,
+    public Article(Long userId, String articleTitle, String stockName, int stockPriceFirst, int stockPriceLast, double stockReturn,
                    String point1, String content1, String point2, String content2, String point3, String content3) {
         this.userId = userId;
         this.articleTitle = articleTitle;
         this.stockName = stockName;
         this.stockPriceFirst = stockPriceFirst;
         this.stockPriceLast = stockPriceLast;
-        this.stockReturn = 0.0;
+        this.stockReturn = stockReturn;
         this.point1 = point1;
         this.content1 = content1;
         this.point2 = point2;
         this.content2 = content2;
         this.point3 = point3;
         this.content3 = content3;
-        this.voteUpList = new ArrayList<>();
-        this.voteDownList = new ArrayList<>();
-        this.commentList = new ArrayList<>();
+        this.voteUpCount = 0;
+        this.voteDownCount = 0;
         this.viewCount = 0;
         this.popularList = false;
         this.richList = false;

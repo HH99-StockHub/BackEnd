@@ -38,8 +38,13 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	implementation 'com.auth0:java-jwt:3.19.2'
 
+
 	//리스트와 셋 다루기 편하게 해주는거
 	implementation("com.google.guava:guava:28.2-jre")
+
+	// MongoDB
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
 }
 
 tasks.named('test') {
