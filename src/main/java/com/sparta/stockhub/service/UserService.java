@@ -50,7 +50,7 @@ public class UserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "8cc8ee200c58b6123c684bbafe1370e6");
-        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
         body.add("code", code);
 
 

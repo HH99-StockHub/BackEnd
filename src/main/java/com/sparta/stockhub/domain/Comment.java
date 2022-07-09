@@ -23,12 +23,12 @@ public class Comment extends Timestamped {
     private Long articleId;
 
     @Column(nullable = false)
-    private String comment;
+    private String comments;
 
 
-    public Comment(Long userId, Long articleId, String comment) {
+    public Comment(Long userId, Long articleId, String comments) {
         this.userId = userId;
         this.articleId = articleId;
-        this.comment = comment;
+        this.comments = comments;
     }
 }
