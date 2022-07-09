@@ -212,10 +212,17 @@ public class ArticleService {
         article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
         int commentCount = countComment(article);
         int voteSign = 0;
-        if(userDetails != null) voteSign = checkVoteSign(userDetails.getUser(), article);
+        if(userDetails != null) {voteSign = checkVoteSign(userDetails.getUser(), article);}
         ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount, voteSign);
         return responseDto;
     }
+
+    // 게시글 찬성/반대 투표 검사
+//    public int checkVoteSign(User user, Article article) {
+//        if (voteUpRepository.findByUserIdAndArticleId(user.getUserId(), article.getArticleId()).isPresent()) return 1;
+//        else if (voteDownRepository.findByUserIdAndArticleId(user.getUserId(), article.getArticleId()).isPresent()) return -1;
+//        else return 0;
+//    }
 
     // 게시글: 찬성 투표
     @Transactional
@@ -332,6 +339,7 @@ public class ArticleService {
 
         String contents = articleTitle + stockName + point1 + content1 + point2 + content2 + point3 + content3;
 
+        //원래 여기에다 놓는게 아니고 데이터베이스에 넣어야 함
         String[] words = {"시발", "병신", "개같이", "멸망", "18년", "18놈", "18새끼", "ㄱㅐㅅㅐㄲl",
                 "ㄱㅐㅈㅏ","가슴만져","가슴빨아","가슴빨어","가슴조물락","가슴주물럭",
                 "가슴쪼물딱","가슴쪼물락","가슴핧아","가슴핧어","강간","개가튼년","개가튼뇬",
@@ -421,21 +429,94 @@ public class ArticleService {
         }return true;
     }
 
-    public List<Article> searchArticle(String keywords, Long searchtype) {
-        /*
-        0 + 전체검색
-        1 = 제목 ArticleTitle
-        2 = 종목이름 stockName
-        3 = 투자 포인트 point
-        4 = 내용 content
-        */
+//    public List<Article> searchArticle(String keywords, Long searchtype) {
+//        /*
+//        0 + 전체검색
+//        1 = 제목 ArticleTitle
+//        2 = 종목이름 stockName
+//        3 = 투자 포인트 point
+//        4 = 내용 content
+//        */
+//
+//        String[] keywordsSplitted = keywords.split(" ");
+//        Set<Article> containingAnyKeywordsArticleSet = new HashSet<>();
+//
+//        if (searchtype == 0) {
+//
+//            for (String keyword : keywordsSplitted) {
+//                System.out.println(keyword);
+//
+//                List<Article> containingKeywordArticleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3Containing(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
+//                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+//
+//
+//            }
+//            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+//            return resultList;
+//        } else if (searchtype == 1) {
+//
+//            for (String keyword : keywordsSplitted) {
+//                System.out.println(keyword);
+//
+//                List<Article> containingKeywordArticleList = articleRepository.findAllByArticleTitleContaining(keyword);
+//                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+//
+//
+//            }
+//            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+//            return resultList;
+//
+//
+//        } else if (searchtype == 2) {
+//
+//            for (String keyword : keywordsSplitted) {
+//                System.out.println(keyword);
+//
+//                List<Article> containingKeywordArticleList = articleRepository.findAllByStockNameContaining(keyword);
+//                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+//
+//
+//            }
+//            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+//            return resultList;
+//
+//
+//        } else if (searchtype == 3) {
+//
+//            for (String keyword : keywordsSplitted) {
+//                System.out.println(keyword);
+//
+//                List<Article> containingKeywordArticleList = articleRepository.findAllByPoint1ContainingOrPoint2ContainingOrPoint3Containing(keyword, keyword, keyword);
+//                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+//
+//
+//            }
+//            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+//            return resultList;
+//
+//        }
+//        for (String keyword : keywordsSplitted) {
+//            System.out.println(keyword);
+//
+//            List<Article> containingKeywordArticleList = articleRepository.findAllByContent1ContainingOrContent2ContainingOrContent3Containing(keyword, keyword, keyword);
+//            containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+//
+//
+//        }
+//        List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+//        return resultList;
+//    }
+    //게시글 검색 Searchtype 은 일단 빼놓고 전체 검색만 적용
+    //게시글 검색
+    //가능하다면 예를들어서
+    //삼성 전자 를 검색했을 때 띄어쓰기를 기준으로 잘라서 삼성이 포함된 게시글 가져오고 전자가 포함된 게시글을 가져오는 방식인데
+    //삼성 과 전자 두 단어가 모두 포함된 게시글을 우선적으로 가져오게끔 해보자
+    public List<Article> searchArticle(String keywords) {
 
         String[] keywordsSplitted = keywords.split(" ");
         Set<Article> containingAnyKeywordsArticleSet = new HashSet<>();
 
-        if (searchtype == 0) {
-
-            for (String keyword : keywordsSplitted) {
+        for (String keyword : keywordsSplitted) {
                 System.out.println(keyword);
 
                 List<Article> containingKeywordArticleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3Containing(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
@@ -445,58 +526,7 @@ public class ArticleService {
             }
             List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
             return resultList;
-        } else if (searchtype == 1) {
 
-            for (String keyword : keywordsSplitted) {
-                System.out.println(keyword);
-
-                List<Article> containingKeywordArticleList = articleRepository.findAllByArticleTitleContaining(keyword);
-                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
-
-
-            }
-            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
-            return resultList;
-
-
-        } else if (searchtype == 2) {
-
-            for (String keyword : keywordsSplitted) {
-                System.out.println(keyword);
-
-                List<Article> containingKeywordArticleList = articleRepository.findAllByStockNameContaining(keyword);
-                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
-
-
-            }
-            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
-            return resultList;
-
-
-        } else if (searchtype == 3) {
-
-            for (String keyword : keywordsSplitted) {
-                System.out.println(keyword);
-
-                List<Article> containingKeywordArticleList = articleRepository.findAllByPoint1ContainingOrPoint2ContainingOrPoint3Containing(keyword, keyword, keyword);
-                containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
-
-
-            }
-            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
-            return resultList;
-
-        }
-        for (String keyword : keywordsSplitted) {
-            System.out.println(keyword);
-
-            List<Article> containingKeywordArticleList = articleRepository.findAllByContent1ContainingOrContent2ContainingOrContent3Containing(keyword, keyword, keyword);
-            containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
-
-
-        }
-        List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
-        return resultList;
     }
 
     // 게시글 찬성/반대 투표 검사

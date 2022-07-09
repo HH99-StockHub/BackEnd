@@ -104,9 +104,17 @@ public class ArticleController {
     }
 
     //게시글 검색
-    @GetMapping("/articles/{keywords}/{searchtype}/search")
-    public List<Article> searchArticle(@PathVariable String keywords, @PathVariable Long searchtype) {
-        return articleService.searchArticle(keywords, searchtype);
+//    @GetMapping("/articles/{keywords}/{searchtype}/search")
+//    public List<Article> searchArticle(@PathVariable String keywords, @PathVariable Long searchtype) {
+//        return articleService.searchArticle(keywords, searchtype);
+//
+//
+//    }
+    //searchtype 빼고 전체검색만 하기로 변경
+
+    @GetMapping("/articles/{keywords}/search")
+    public List<Article> searchArticle(@PathVariable String keywords) {
+        return articleService.searchArticle(keywords);
 
 
     }

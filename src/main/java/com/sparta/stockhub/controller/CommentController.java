@@ -25,11 +25,11 @@ public class CommentController {
 
     // 게시글: 댓글 작성
     @PostMapping("/articles/{articleId}/comment")
-    public boolean createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId, @RequestBody String comment) {
-        if(commentService.cleanCommnet(comment)==false){
+    public boolean createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId, @RequestBody String comments) {
+        if(commentService.cleanCommnet(comments)==false){
             return false;
         }
-        if (userDetails != null) commentService.createComment(userDetails, articleId, comment);
+        if (userDetails != null) commentService.createComment(userDetails, articleId, comments);
         return true;
     }
 

@@ -40,14 +40,14 @@ public class CommentService {
     }
 
     // 게시글: 댓글 작성
-    public void createComment(UserDetailsImpl userDetails, Long articleId, String comment) {
+    public void createComment(UserDetailsImpl userDetails, Long articleId, String comments) {
         Long loginId = userDetails.getUser().getUserId();
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
-        if (comment.equals("")) throw new CustomException(ErrorCode.BAD_REQUEST_NOTWRITE);
-        if (comment.length() > 300) throw new CustomException(ErrorCode.BAD_REQUEST_COMMENTLENGTH);
-        Comment newComment = new Comment(loginId, articleId, comment);
+        if (comments.equals("")) throw new CustomException(ErrorCode.BAD_REQUEST_NOTWRITE);
+        if (comments.length() > 300) throw new CustomException(ErrorCode.BAD_REQUEST_COMMENTLENGTH);
+        Comment newComment = new Comment(loginId, articleId, comments);
         commentRepository.save(newComment);
     }
 
@@ -64,7 +64,7 @@ public class CommentService {
 
     }
 
-    public boolean cleanCommnet(String comment) {
+    public boolean cleanCommnet(String comments) {
 
         String[] words = {"시발","병신","개같이","멸망","18년","18놈","18새끼","ㄱㅐㅅㅐㄲl",
                 "ㄱㅐㅈㅏ","가슴만져","가슴빨아","가슴빨어","가슴조물락","가슴주물럭",
@@ -148,7 +148,7 @@ public class CommentService {
 
                 "bitch", "fuck", "fuckyou", "nflavor", "penis", "motherfuck"};
         for (String word : words) {
-            if (comment.contains(word)) {
+            if (comments.contains(word)) {
                 return false;
             }
         }return true;
