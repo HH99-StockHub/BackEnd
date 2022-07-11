@@ -113,7 +113,7 @@ public class ArticleController {
     //searchtype 빼고 전체검색만 하기로 변경
 
     @GetMapping("/articles/{keywords}/search")
-    public List<Article> searchArticle(@PathVariable String keywords) {
+    public List<ArticleListResponseDto> searchArticle(@PathVariable String keywords) {
         return articleService.searchArticle(keywords);
 
 

@@ -511,23 +511,38 @@ public class ArticleService {
     //가능하다면 예를들어서
     //삼성 전자 를 검색했을 때 띄어쓰기를 기준으로 잘라서 삼성이 포함된 게시글 가져오고 전자가 포함된 게시글을 가져오는 방식인데
     //삼성 과 전자 두 단어가 모두 포함된 게시글을 우선적으로 가져오게끔 해보자
-    public List<Article> searchArticle(String keywords) {
+    public List<ArticleListResponseDto> searchArticle(String keywords) {
 
         String[] keywordsSplitted = keywords.split(" ");
-        Set<Article> containingAnyKeywordsArticleSet = new HashSet<>();
+        Set<ArticleListResponseDto> containingAnyKeywordsArticleSet = new HashSet<>();
 
         for (String keyword : keywordsSplitted) {
                 System.out.println(keyword);
 
-                List<Article> containingKeywordArticleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3Containing(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
+                List<ArticleListResponseDto> containingKeywordArticleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
                 containingAnyKeywordsArticleSet.addAll(containingKeywordArticleList);
+                //OrderBy Created At 추가
 
 
             }
-            List<Article> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
+            List<ArticleListResponseDto> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
             return resultList;
 
     }
+
+//    public List<ArticleListResponseDto> readMainArticles() {
+//        List<Article> articleList = articleRepository.findAllByOrderByCreatedAtDesc();
+//        List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
+//        for (int i = 0; i < articleList.size(); i++) {
+//            if (i == 10) break; // 메인 페이지에 내릴 때는 최신 게시글 10개만 반환
+//            User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
+//                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+//            );
+//            int commentCount = countComment(articleList.get(i));
+//            responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
+//        }
+//        return responseDtoList;
+//    }
 
     // 게시글 찬성/반대 투표 검사
     public int checkVoteSign(User user, Article article) {
