@@ -1,5 +1,6 @@
 package com.sparta.stockhub.controller;
 
+import com.sparta.stockhub.dto.requestDto.CommentRequestDto;
 import com.sparta.stockhub.dto.responseDto.CommentResponseDto;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import com.sparta.stockhub.service.CommentService;
@@ -25,11 +26,11 @@ public class CommentController {
 
     // 게시글: 댓글 작성
     @PostMapping("/articles/{articleId}/comment")
-    public boolean createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId, @RequestBody String comments) {
-        if(commentService.cleanCommnet(comments)==false){
+    public boolean createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId, @RequestBody CommentRequestDto requestDto) {
+        if(commentService.cleanCommnet(requestDto)==false){
             return false;
         }
-        if (userDetails != null) commentService.createComment(userDetails, articleId, comments);
+        if (userDetails != null) commentService.createComment(userDetails, articleId, requestDto);
         return true;
     }
 

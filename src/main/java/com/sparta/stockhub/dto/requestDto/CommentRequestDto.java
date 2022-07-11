@@ -1,2 +1,8 @@
-package com.sparta.stockhub.dto.requestDto;public class CommentRequestDto {
+package com.sparta.stockhub.dto.requestDto;
+
+import lombok.Getter;
+
+@Getter
+public class CommentRequestDto {
+    private String comments;
 }

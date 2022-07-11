@@ -3,6 +3,7 @@ package com.sparta.stockhub.service;
 import com.sparta.stockhub.domain.Article;
 import com.sparta.stockhub.domain.Comment;
 import com.sparta.stockhub.domain.User;
+import com.sparta.stockhub.dto.requestDto.CommentRequestDto;
 import com.sparta.stockhub.dto.responseDto.CommentResponseDto;
 import com.sparta.stockhub.exceptionHandler.CustomException;
 import com.sparta.stockhub.exceptionHandler.ErrorCode;
@@ -12,6 +13,7 @@ import com.sparta.stockhub.repository.UserRepository;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -40,7 +42,8 @@ public class CommentService {
     }
 
     // 게시글: 댓글 작성
-    public void createComment(UserDetailsImpl userDetails, Long articleId, String comments) {
+    public void createComment(UserDetailsImpl userDetails, Long articleId, CommentRequestDto requestDto) {
+        String comments = requestDto.getComments();
         Long loginId = userDetails.getUser().getUserId();
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
@@ -64,7 +67,7 @@ public class CommentService {
 
     }
 
-    public boolean cleanCommnet(String comments) {
+    public boolean cleanCommnet( CommentRequestDto requestDto) {
 
         String[] words = {"시발","병신","개같이","멸망","18년","18놈","18새끼","ㄱㅐㅅㅐㄲl",
                 "ㄱㅐㅈㅏ","가슴만져","가슴빨아","가슴빨어","가슴조물락","가슴주물럭",
@@ -147,6 +150,8 @@ public class CommentService {
                 "후장", "후장꽂아", "후장뚫어", "흐접", "흐젚", "흐졉",
 
                 "bitch", "fuck", "fuckyou", "nflavor", "penis", "motherfuck"};
+
+        String comments = requestDto.getComments();
         for (String word : words) {
             if (comments.contains(word)) {
                 return false;
