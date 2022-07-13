@@ -13,9 +13,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     void deleteByArticleId(Long articleId);
 
-    List<Article> findAllByArticleTitleContaining (String search);
+    List<Article> findAllByArticleTitleContaining (String title);
 
-    List<Article> findAllByStockNameContaining (String search);
+    List<Article> findAllByStockNameContaining (String stockname);
 
     List<Article> findAllByPoint1ContainingOrPoint2ContainingOrPoint3Containing (String point1, String point2, String point3);
 

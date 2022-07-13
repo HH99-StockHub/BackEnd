@@ -12,13 +12,21 @@ import com.sparta.stockhub.exceptionHandler.ErrorCode;
 import com.sparta.stockhub.repository.*;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
-import java.util.HashSet;
+
+import java.util.*;
+import java.util.Comparator;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+
 import com.google.common.collect.Lists;
+
+
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -533,28 +541,126 @@ public class ArticleService {
 //    }
 
     public List<ArticleListResponseDto> searchArticle(String keywords) {
+        System.out.println("----------------------구분선-------------------------");
+        String keywordstrim = keywords.trim();
+        System.out.println("좌우 공백 제거한 검색어 " + keywordstrim);
 
-        Set<ArticleListResponseDto> containingAnyKeywordsArticleSet = new HashSet<>();
 
-        String[] keywordsSplitted = keywords.split(" ");
-
-        for (String keyword : keywordsSplitted){
-
-            List<Article> articleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
+        if (keywordstrim.contains(" ")) {
+            List<Article> articleListKeywords = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim);
             List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
-            for (int i = 0; i < articleList.size(); i++) {
-                if (i == 10) break; // 메인 페이지에 내릴 때는 최신 게시글 10개만 반환
-                User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
+            System.out.println("띄어쓰기가 포함된 검색어 입니다");
+
+            for (int i = 0; i < articleListKeywords.size(); i++) {
+
+
+
+                User user = userRepository.findById(articleListKeywords.get(i).getUserId()).orElseThrow(
                         () -> new NullPointerException("유저가 존재하지 않습니다.")
                 );
-                int commentCount = countComment(articleList.get(i));
-                responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
+                int commentCount = countComment(articleListKeywords.get(i));
+                responseDtoList.add(new ArticleListResponseDto(articleListKeywords.get(i), user, commentCount));
             }
-            containingAnyKeywordsArticleSet.addAll(responseDtoList);
-        }
-        List<ArticleListResponseDto> resultList = Lists.newArrayList(containingAnyKeywordsArticleSet);
 
-        return resultList;
+
+
+            String[] keywordsSplitted = keywordstrim.split(" ");
+
+            for (String keyword : keywordsSplitted) {
+                System.out.println( "띄어쓰기를 기준으로 분리한 검색어 <" + keyword + ">");
+
+                    List<Article> articleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
+
+                    for (int i = 0; i < articleList.size(); i++) {
+
+                        if(keyword.equals("")){continue;}
+
+
+                        User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
+                                () -> new NullPointerException("유저가 존재하지 않습니다.")
+                        );
+                        int commentCount = countComment(articleList.get(i));
+
+                        responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
+
+                    }
+
+            }
+            for (int i = 0; i < responseDtoList.size(); i++){
+                for (int n = i+1; n < responseDtoList.size(); n++){
+                    if(responseDtoList.get(i).getArticleId().equals(responseDtoList.get(n).getArticleId()))
+                        responseDtoList.remove(i);
+                }
+            }
+
+            for (int i = 0; i < responseDtoList.size(); i++){
+                for (int n = i+1; n < responseDtoList.size(); n++){
+                    if(responseDtoList.get(i).getUserId().equals(responseDtoList.get(n).getUserId()) &&
+                            responseDtoList.get(i).getCreatedAt() == responseDtoList.get(n).getCreatedAt())
+                        responseDtoList.remove(i);
+                }
+            }
+
+            for (int i = 0; i < responseDtoList.size(); i++){
+                if(responseDtoList.get(i).getArticleTitle().contains(keywordstrim)){
+                    System.out.println("게시글 제목에 검색어가 그대로 포함 되어 있는 게시글의 제목 " + responseDtoList.get(i).getArticleTitle());
+                    responseDtoList.add(0, responseDtoList.get(i));
+                    responseDtoList.remove(i+1);
+                }
+            }
+
+
+
+
+            System.out.println("반환할 리스트 " + responseDtoList);
+
+            for (int i = 0; i < responseDtoList.size(); i++){
+                System.out.println("반환할 리스트의 게시글 제목 " + responseDtoList.get(i).getArticleTitle());
+                System.out.println("반환할 리스트의 게시글 생성 시각" + responseDtoList.get(i).getCreatedAt());
+            }
+
+
+
+            return responseDtoList;
+        }
+        System.out.println("띄어쓰끼가 포함되지 않은 검색어");
+        System.out.println("좌우 공백을 제거한 검색어 " + keywordstrim);
+        List<ArticleListResponseDto> responseDtoListKeywords = new ArrayList<>();
+
+            List<Article> articleListKeywords = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim);
+
+
+
+            for (int i = 0; i < articleListKeywords.size(); i++) {
+
+                if(keywordstrim.equals("")){continue;}
+
+                User user = userRepository.findById(articleListKeywords.get(i).getUserId()).orElseThrow(
+                        () -> new NullPointerException("유저가 존재하지 않습니다.")
+                );
+                int commentCount = countComment(articleListKeywords.get(i));
+                responseDtoListKeywords.add(new ArticleListResponseDto(articleListKeywords.get(i), user, commentCount));
+            }
+
+            System.out.println("반환할 리스트 " + responseDtoListKeywords);
+
+        for (int i = 0; i < responseDtoListKeywords.size(); i++){
+            System.out.println("반환할 리스트의 게시글 제목 " + responseDtoListKeywords.get(i).getArticleTitle()) ;
+        }
+            return responseDtoListKeywords;
+
+
+
+    }
+
+// dto로 이루어져있는 리스트를 정렬하기 위한 클래스 "Comparator"
+    class ArticleListResponseDtoComparator implements Comparator<ArticleListResponseDto>{
+        @Override
+        public int compare(ArticleListResponseDto a,ArticleListResponseDto b){
+            if(a.getArticleId()>b.getArticleId()) return 1;
+            if(a.getArticleId()<b.getArticleId()) return -1;
+            return 0;
+        }
     }
 
     // 게시글 찬성/반대 투표 검사

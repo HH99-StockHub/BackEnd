@@ -17,11 +17,14 @@ public class CommentResponseDto {
     private String profileImage;
     private String comments;
 
+    private Long userId;
+
     public CommentResponseDto(Comment comment, User user) {
         this.commentId = comment.getCommentId();
         this.createdAt = comment.getCreatedAt();
         this.nickname = user.getNickname();
         this.profileImage = user.getProfileImage();
+        this.userId = user.getUserId();
         this.comments = comment.getComments();
     }
 }
