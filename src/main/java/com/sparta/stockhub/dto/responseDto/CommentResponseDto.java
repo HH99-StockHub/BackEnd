@@ -15,13 +15,16 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
     private String nickname;
     private String profileImage;
-    private String comment;
+    private String comments;
+
+    private Long userId;
 
     public CommentResponseDto(Comment comment, User user) {
         this.commentId = comment.getCommentId();
         this.createdAt = comment.getCreatedAt();
         this.nickname = user.getNickname();
         this.profileImage = user.getProfileImage();
-        this.comment = comment.getComment();
+        this.userId = user.getUserId();
+        this.comments = comment.getComments();
     }
 }

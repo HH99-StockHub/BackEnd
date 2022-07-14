@@ -1,6 +1,9 @@
 package com.sparta.stockhub.service;
 
 import com.sparta.stockhub.domain.Stock;
+import com.sparta.stockhub.exceptionHandler.CustomException;
+import com.sparta.stockhub.exceptionHandler.ErrorCode;
+import com.sparta.stockhub.repository.ArticleRepository;
 import com.sparta.stockhub.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
