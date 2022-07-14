@@ -24,7 +24,7 @@ public class StockService {
         Stock stock = stockRepository.findByStockName(stockName).orElseThrow(
                 () -> new NullPointerException("종목이 존재하지 않습니다.")
         );
-        return stock.getPrice();
+        return stock.getStockPrice();
     }
 
     // 종목 수익률 계산

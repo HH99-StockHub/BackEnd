@@ -20,11 +20,14 @@ public class Stock {
 
     private String stockName;
 
-    private int price;
+    private int stockPrice;
 
-    public Stock(String stockCode, String stockName, int price) {
+    private boolean registered;
+
+    public Stock(String stockCode, String stockName, int stockPrice, boolean registered) {
         this.stockCode = stockCode;
         this.stockName = stockName;
-        this.price = price;
+        this.stockPrice = stockPrice;
+        this.registered = registered;
     }
 }
