@@ -52,7 +52,7 @@ public class UserService {
         body.add("client_id", "12c4e96969c4b50ad263268577cdcb76"); /*한울님 꺼*/
 
         body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
-        
+
         //로컬에서 포스트맨 쓸 때는 8080
 //        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
         body.add("code", code);

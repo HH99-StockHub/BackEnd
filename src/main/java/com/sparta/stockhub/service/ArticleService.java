@@ -12,14 +12,14 @@ import com.sparta.stockhub.exceptionHandler.ErrorCode;
 import com.sparta.stockhub.repository.*;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
+
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.Comparator;
+
 import javax.transaction.Transactional;
 
-import com.google.common.collect.Lists;
+
 
 
 import java.util.List;
@@ -542,35 +542,23 @@ public class ArticleService {
 
     public List<ArticleListResponseDto> searchArticle(String keywords) {
         System.out.println("----------------------구분선-------------------------");
+        /*검색어의 좌우 공백 제거*/
         String keywordstrim = keywords.trim();
         System.out.println("좌우 공백 제거한 검색어 " + keywordstrim);
 
-
+        /*검색어에 띄어쓰기가 포함된 경우*/
         if (keywordstrim.contains(" ")) {
-            List<Article> articleListKeywords = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim, keywordstrim);
             List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
             System.out.println("띄어쓰기가 포함된 검색어 입니다");
 
-            for (int i = 0; i < articleListKeywords.size(); i++) {
-
-
-
-                User user = userRepository.findById(articleListKeywords.get(i).getUserId()).orElseThrow(
-                        () -> new NullPointerException("유저가 존재하지 않습니다.")
-                );
-                int commentCount = countComment(articleListKeywords.get(i));
-                responseDtoList.add(new ArticleListResponseDto(articleListKeywords.get(i), user, commentCount));
-            }
-
-
-
+            /*띄어쓰기를 기준으로 검색어를 쪼개서 배열 생성*/
             String[] keywordsSplitted = keywordstrim.split(" ");
-
+            /*반복문을 통해 각각의 단어들로 검색 및 저장*/
             for (String keyword : keywordsSplitted) {
                 System.out.println( "띄어쓰기를 기준으로 분리한 검색어 <" + keyword + ">");
 
                     List<Article> articleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
-
+                    System.out.println(articleList);
                     for (int i = 0; i < articleList.size(); i++) {
 
                         if(keyword.equals("")){continue;}
@@ -586,13 +574,8 @@ public class ArticleService {
                     }
 
             }
-            for (int i = 0; i < responseDtoList.size(); i++){
-                for (int n = i+1; n < responseDtoList.size(); n++){
-                    if(responseDtoList.get(i).getArticleId().equals(responseDtoList.get(n).getArticleId()))
-                        responseDtoList.remove(i);
-                }
-            }
 
+            /*중복되는 게시글 제거*/
             for (int i = 0; i < responseDtoList.size(); i++){
                 for (int n = i+1; n < responseDtoList.size(); n++){
                     if(responseDtoList.get(i).getUserId().equals(responseDtoList.get(n).getUserId()) &&
@@ -601,6 +584,7 @@ public class ArticleService {
                 }
             }
 
+            /*쪼개기 전의 검색어를 그대로 제목에 포함하고 있는 게시글이 있다면 반환할 리스트의 맨 앞으로 이동*/
             for (int i = 0; i < responseDtoList.size(); i++){
                 if(responseDtoList.get(i).getArticleTitle().contains(keywordstrim)){
                     System.out.println("게시글 제목에 검색어가 그대로 포함 되어 있는 게시글의 제목 " + responseDtoList.get(i).getArticleTitle());
@@ -609,14 +593,10 @@ public class ArticleService {
                 }
             }
 
-
-
-
             System.out.println("반환할 리스트 " + responseDtoList);
 
             for (int i = 0; i < responseDtoList.size(); i++){
                 System.out.println("반환할 리스트의 게시글 제목 " + responseDtoList.get(i).getArticleTitle());
-                System.out.println("반환할 리스트의 게시글 생성 시각" + responseDtoList.get(i).getCreatedAt());
             }
 
 
@@ -653,15 +633,6 @@ public class ArticleService {
 
     }
 
-// dto로 이루어져있는 리스트를 정렬하기 위한 클래스 "Comparator"
-    class ArticleListResponseDtoComparator implements Comparator<ArticleListResponseDto>{
-        @Override
-        public int compare(ArticleListResponseDto a,ArticleListResponseDto b){
-            if(a.getArticleId()>b.getArticleId()) return 1;
-            if(a.getArticleId()<b.getArticleId()) return -1;
-            return 0;
-        }
-    }
 
     // 게시글 찬성/반대 투표 검사
     public int checkVoteSign(User user, Article article) {
