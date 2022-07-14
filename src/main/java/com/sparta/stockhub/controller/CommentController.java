@@ -18,7 +18,6 @@ public class CommentController {
 
     // 게시글: 댓글 목록 조회
     @GetMapping("/articles/{articleId}/comments")
-
     public List<CommentResponseDto> readComments(@PathVariable Long articleId) {
         return commentService.readComments(articleId);
 
@@ -27,16 +26,13 @@ public class CommentController {
     // 게시글: 댓글 작성
     @PostMapping("/articles/{articleId}/comment")
     public boolean createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId, @RequestBody CommentRequestDto requestDto) {
-        if(commentService.cleanCommnet(requestDto)==false){
-            return false;
-        }
+        if (commentService.cleanCommnet(requestDto) == false) return false; // 욕설 필터링 통과 못할 시 false return
         if (userDetails != null) commentService.createComment(userDetails, articleId, requestDto);
         return true;
     }
 
     // 게시글: 댓글 삭제
     @DeleteMapping("/comments/{commentId}")
-
     public void deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId) {
         if (userDetails != null) commentService.deleteComment(userDetails, commentId);
     }

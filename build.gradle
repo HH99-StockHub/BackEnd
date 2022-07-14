@@ -19,9 +19,6 @@ repositories {
 }
 
 dependencies {
-	// https://mvnrepository.com/artifact/org.json/json     //JSON을 자바에서 다루기 위해 필요함
-	implementation group: 'org.json', name: 'json', version: '20160810'
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
@@ -31,7 +28,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// Spring Web Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	// Thymeleaf (뷰 템플릿 엔진)
+	// Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	// JWT
 	implementation 'javax.xml.bind:jaxb-api'
@@ -40,10 +37,10 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	implementation 'com.auth0:java-jwt:3.19.2'
-
-
 	// MongoDB
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	// JSON
+	implementation group: 'org.json', name: 'json', version: '20160810'
 
 }
 

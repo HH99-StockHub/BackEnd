@@ -15,14 +15,14 @@ public class StockController {
 
     private final StockService stockService;
 
-    // 전체 종목 목록 조회
+    // 주식: 전체 종목 리스트 조회
     @GetMapping("/stocks")
     public List<Stock> getStocks() {
         return stockService.getStocks();
     }
 
-    // 종목 현재가 조회
-    @GetMapping("/stock/get/{stockName}")
+    // 주식: 저장된 현재가 조회
+    @GetMapping("/stock/price/{stockName}")
     public int getStockPrice(@PathVariable String stockName) {
         return stockService.getStockPrice(stockName);
     }

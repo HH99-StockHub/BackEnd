@@ -46,19 +46,14 @@ public class UserService {
         // HTTP Header 생성
         HttpHeaders header = new HttpHeaders();
         header.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", "12c4e96969c4b50ad263268577cdcb76"); /*한울님 꺼*/
-
+        body.add("client_id", "12c4e96969c4b50ad263268577cdcb76");
         body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
-
-        //로컬에서 포스트맨 쓸 때는 8080
-//        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
         body.add("code", code);
 
-       /* https://kauth.kakao.com/oauth/authorize?client_id=12c4e96969c4b50ad263268577cdcb76&redirect_uri=http://localhost:8080/user/kakao/callback&response_type=code
-카카오 로그인 마법의 주소 포스트맨 치고 여기에 아무것도 없어야 함 아무것도 없으면 인텔리제이에 인가토큰 나옴 기무리*/
         // HTTP 요청
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
                 new HttpEntity<>(body, header);

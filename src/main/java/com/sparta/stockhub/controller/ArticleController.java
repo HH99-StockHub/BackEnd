@@ -1,6 +1,5 @@
 package com.sparta.stockhub.controller;
 
-import com.sparta.stockhub.domain.Article;
 import com.sparta.stockhub.dto.requestDto.ArticleRequestDto;
 import com.sparta.stockhub.dto.responseDto.ArticleListResponseDto;
 import com.sparta.stockhub.dto.responseDto.ArticleResponseDto;
@@ -9,7 +8,6 @@ import com.sparta.stockhub.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.List;
 
@@ -22,12 +20,17 @@ public class ArticleController {
     // 게시글 작성
     @PostMapping("/article")
     public boolean createArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ArticleRequestDto requestDto) {
-        if(articleService.cleanArticle(requestDto)==false){
-            return false;
-        }
+        if(articleService.cleanArticle(requestDto) == false) return false; // 욕설 필터링 통과 못할 시 false return
         if (userDetails != null) {
             articleService.createArticle(userDetails, requestDto);
-        }return true;
+        }
+        return true;
+    }
+
+    // 게시글 검색
+    @GetMapping("/articles/{keywords}/search")
+    public List<ArticleListResponseDto> searchArticle(@PathVariable String keywords) {
+        return articleService.searchArticle(keywords);
     }
 
     // 메인: 전체 게시글 목록 조회
@@ -68,7 +71,7 @@ public class ArticleController {
     @GetMapping("/user/{userId}/articles")
     public List<ArticleListResponseDto> readUserArticles(@PathVariable Long userId) { return articleService.readUserArticles(userId);}
 
-    // 모아보기 게시판: 내 게시글 목록 조회 //////////////////// 타인 게시글 목록 조회와 같은 함수 사용
+    // 모아보기 게시판: 내 게시글 목록 조회
     @GetMapping("/user/my/articles")
     public List<ArticleListResponseDto> readMyArticles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails != null) return articleService.readUserArticles(userDetails.getUser().getUserId());
@@ -101,21 +104,5 @@ public class ArticleController {
     @DeleteMapping("/articles/{articleId}")
     public void deleteArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId) {
         articleService.deleteArticle(userDetails, articleId);
-    }
-
-    //게시글 검색
-//    @GetMapping("/articles/{keywords}/{searchtype}/search")
-//    public List<Article> searchArticle(@PathVariable String keywords, @PathVariable Long searchtype) {
-//        return articleService.searchArticle(keywords, searchtype);
-//
-//
-//    }
-    //searchtype 빼고 전체검색만 하기로 변경
-
-    @GetMapping("/articles/{keywords}/search")
-    public List<ArticleListResponseDto> searchArticle(@PathVariable String keywords) {
-        return articleService.searchArticle(keywords);
-
-
     }
 }

@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-
 @Entity
 @Getter
 @Setter
@@ -26,13 +25,13 @@ public class Article extends Timestamped {
     @Column(nullable = false)
     String stockName;
 
-    @Column // 글 작성 당시의 주식 가격
-    int stockPriceFirst;
+    @Column
+    int stockPriceFirst; // 글 작성 시점의 주식 가격
 
-    @Column // 조회 시점의 주식 가격
-    int stockPriceLast;
+    @Column
+    int stockPriceLast; // 조회 시점의 주식 가격
 
-    @Column // 글 작성 이후의 주식 수익률
+    @Column
     double stockReturn;
 
     @Column(nullable = false)
@@ -59,14 +58,14 @@ public class Article extends Timestamped {
     @Column
     int voteDownCount;
 
-    @Column // 조회수
+    @Column
     int viewCount;
 
-    @Column // 인기글 게시판 등록 여부
-    boolean popularList;
+    @Column
+    boolean popularList; // 인기글 게시판 등록 여부
 
-    @Column // 수익왕 게시판 등록 여부
-    boolean richList;
+    @Column
+    boolean richList; // 수익왕 게시판 등록 여부
 
     public Article(Long userId, String articleTitle, String stockName, int stockPriceFirst, int stockPriceLast, double stockReturn,
                    String point1, String content1, String point2, String content2, String point3, String content3) {

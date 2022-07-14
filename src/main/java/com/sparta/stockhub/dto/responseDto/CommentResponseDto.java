@@ -16,7 +16,6 @@ public class CommentResponseDto {
     private String nickname;
     private String profileImage;
     private String comments;
-
     private Long userId;
 
     public CommentResponseDto(Comment comment, User user) {

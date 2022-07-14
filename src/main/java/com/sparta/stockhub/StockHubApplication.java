@@ -10,9 +10,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableJpaAuditing
 @EnableMongoRepositories(basePackageClasses = StockRepository.class)
 public class StockHubApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(StockHubApplication.class, args);
 	}
-
 }

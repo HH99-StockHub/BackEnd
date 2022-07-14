@@ -5,24 +5,24 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Getter
 @Entity
+@Getter
 @NoArgsConstructor
 public class News extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long newsId;  //newsId
+    private Long newsId;
 
     @Column
-    private String title;   // news 제목
+    private String title;
 
     @Column
-    private String link;    // news 링크
+    private String link;
 
     @Column
-    private String description; // news 내용
+    private String description;
 
     @Column
-    private String pubDate; // news 발행 날짜
+    private String pubDate;
 }

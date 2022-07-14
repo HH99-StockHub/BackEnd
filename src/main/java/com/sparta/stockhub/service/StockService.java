@@ -16,13 +16,13 @@ public class StockService {
 
     private final StockRepository stockRepository;
 
-    // 전체 종목 목록 조회
+    // 주식: 전체 종목 리스트 조회
     public List<Stock> getStocks() {
         List<Stock> stocks = stockRepository.findAll();
         return stocks;
     }
 
-    // 종목 현재가 조회
+    // 주식: 저장된 현재가 조회
     public int getStockPrice(String stockName) {
         Stock stock = stockRepository.findByStockName(stockName).orElseThrow(
                 () -> new NullPointerException("종목이 존재하지 않습니다.")
