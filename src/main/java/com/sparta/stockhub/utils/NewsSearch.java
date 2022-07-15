@@ -22,7 +22,7 @@ public class NewsSearch {
         String body = "";
 
         HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
-        ResponseEntity<String> responseEntity = rest.exchange("https://openapi.naver.com/v1/search/news.json?query=" + stockName, HttpMethod.GET, requestEntity, String.class);
+        ResponseEntity<String> responseEntity = rest.exchange("https://openapi.naver.com/v1/search/news.json?query=" + stockName + "&display=5", HttpMethod.GET, requestEntity, String.class);
         HttpStatus httpStatus = responseEntity.getStatusCode();
         int status = httpStatus.value();
         String response = responseEntity.getBody();

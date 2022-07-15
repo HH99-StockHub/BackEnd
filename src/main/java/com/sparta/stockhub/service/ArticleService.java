@@ -425,7 +425,7 @@ public class ArticleService {
     public void checkRichList() {
         List<Article> articleList = articleRepository.findAll();
         for (int i = 0; i < articleList.size(); i++) {
-            if (articleList.get(i).getStockReturn() >= 0.15) articleList.get(i).setRichList(true);
+            if (articleList.get(i).getStockReturn() >= 5) articleList.get(i).setRichList(true);
             else articleList.get(i).setRichList(false);
         }
     }
