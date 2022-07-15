@@ -33,7 +33,7 @@ public class StockService {
 
     // 종목 수익률 계산
     public double getStockReturn(int stockPriceFirst, int stockPriceLast) {
-        double stockReturn = (double) (stockPriceLast - stockPriceFirst) / stockPriceFirst;
+        double stockReturn = (double) (stockPriceLast - stockPriceFirst) * 100 / stockPriceFirst;
         return stockReturn;
     }
 
