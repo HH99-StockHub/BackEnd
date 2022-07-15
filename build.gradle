@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.9'
+	id 'org.springframework.boot' version '2.6.8'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
@@ -26,6 +26,22 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// Spring Web Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// Thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	// JWT
+	implementation 'javax.xml.bind:jaxb-api'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'commons-codec:commons-codec:1.15'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	implementation 'com.auth0:java-jwt:3.19.2'
+	// MongoDB
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	// JSON
+	implementation group: 'org.json', name: 'json', version: '20160810'
+
 }
 
 tasks.named('test') {

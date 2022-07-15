@@ -10,25 +10,20 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Comment extends Timestamped {
+public class VoteDown {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
-
-    @Column(nullable = false)
-    private Long userId;
+    private Long voteDownId;
 
     @Column(nullable = false)
     private Long articleId;
 
     @Column(nullable = false)
-    private String comments;
+    private Long userId;
 
-
-    public Comment(Long userId, Long articleId, String comments) {
-        this.userId = userId;
+    public VoteDown(Long articleId, Long userId) {
         this.articleId = articleId;
-        this.comments = comments;
+        this.userId = userId;
     }
 }
