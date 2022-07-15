@@ -6,6 +6,7 @@ import com.sparta.stockhub.dto.responseDto.ArticleResponseDto;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import com.sparta.stockhub.service.ArticleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +30,14 @@ public class ArticleController {
 
     // 게시글 검색
     @GetMapping("/articles/{keywords}/search")
-    public List<ArticleListResponseDto> searchArticle(@PathVariable String keywords) {
-        return articleService.searchArticle(keywords);
+    public Page<ArticleListResponseDto> searchArticle(
+            @PathVariable String keywords,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size
+
+    ) {
+        page = page - 1;
+        return articleService.searchArticle(keywords, page, size);
     }
 
     // 메인: 전체 게시글 목록 조회
@@ -57,7 +64,11 @@ public class ArticleController {
 
     // 전체 게시판: 게시글 목록 조회
     @GetMapping("/all/articles")
-    public List<ArticleListResponseDto> readAllArticles() { return articleService.readAllArticles(); }
+    public Page<ArticleListResponseDto> readAllArticles(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size
+    ) { page = page - 1;
+        return articleService.readAllArticles(page, size); }
 
     // 인기글 게시판: 게시글 목록 조회
     @GetMapping("/popular/articles")
@@ -81,8 +92,7 @@ public class ArticleController {
     // 게시글: 게시글 내용 조회
     @GetMapping("/articles/{articleId}")
     public ArticleResponseDto readArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId) {
-        if (userDetails != null) return articleService.readArticleLoggedIn(userDetails.getUser(), articleId);
-        else return articleService.readArticle(articleId);
+        return articleService.readArticle(userDetails, articleId);
     }
 
     // 게시글: 찬성 투표
