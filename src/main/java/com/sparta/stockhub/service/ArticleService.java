@@ -64,6 +64,8 @@ public class ArticleService {
         Article article = new Article(userId, articleTitle, stockName, stockPriceFirst, stockPriceLast, stockReturn,
                 point1, content1, point2, content2, point3, content3);
 
+        stockService.registerStock(stockName);
+
         articleRepository.save(article);
     }
 
@@ -257,9 +259,25 @@ public class ArticleService {
         return responseDtoList;
     }
 
-    // 게시글: 게시글 내용 조회
+    // 게시글: 게시글 내용 조회 (로그인 사용자) //////////////////// 수정 필요
     @Transactional
-    public ArticleResponseDto readArticle(UserDetailsImpl userDetails, Long articleId) {
+    public ArticleResponseDto readArticleLoggedIn(User loginUser, Long articleId) {
+        Article article = articleRepository.findByArticleId(articleId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
+        );
+        User user = userRepository.findById(article.getUserId()).orElseThrow(
+                () -> new NullPointerException("유저가 존재하지 않습니다.")
+        );
+        article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
+        int commentCount = countComment(article);
+        int voteSign = checkVoteSign(loginUser, article);
+        ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount, voteSign);
+        return responseDto;
+    }
+
+    // 게시글: 게시글 내용 조회 (비로그인 사용자) //////////////////// 수정 필요
+    @Transactional
+    public ArticleResponseDto readArticle(Long articleId) {
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
@@ -269,9 +287,6 @@ public class ArticleService {
         article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
         int commentCount = countComment(article);
         int voteSign = 0;
-        if (userDetails != null) {
-            voteSign = checkVoteSign(userDetails.getUser(), article);
-        }
         ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount, voteSign);
         return responseDto;
     }
@@ -395,7 +410,7 @@ public class ArticleService {
         else article.setPopularList(false);
     }
 
-    // 게시글 등록 종목 현재가 및 수익률 업데이트 //////////////////// 스케쥴러 적용 필요
+    // 게시글 등록 종목 현재가 및 수익률 업데이트 //////////////////// 스케쥴러 연동 완료
     @Transactional
     public void updateArticle() {
         List<Article> articleList = articleRepository.findAll();
@@ -405,11 +420,14 @@ public class ArticleService {
         }
     }
 
-    // 수익왕 등록/해제 검사 //////////////////// 스케쥴러 적용 필요
+    // 수익왕 등록/해제 검사 //////////////////// 스케쥴러 연동 완료
     @Transactional
-    public void checkRichList(Article article) {
-        if (article.getStockReturn() >= 0.15) article.setRichList(true);
-        else article.setRichList(false);
+    public void checkRichList() {
+        List<Article> articleList = articleRepository.findAll();
+        for (int i = 0; i < articleList.size(); i++) {
+            if (articleList.get(i).getStockReturn() >= 0.15) articleList.get(i).setRichList(true);
+            else articleList.get(i).setRichList(false);
+        }
     }
 
     // 게시글 욕설 필터링

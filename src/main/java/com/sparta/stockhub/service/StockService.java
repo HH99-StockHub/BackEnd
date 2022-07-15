@@ -8,6 +8,7 @@ import com.sparta.stockhub.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -34,5 +35,15 @@ public class StockService {
     public double getStockReturn(int stockPriceFirst, int stockPriceLast) {
         double stockReturn = (double) (stockPriceLast - stockPriceFirst) / stockPriceFirst;
         return stockReturn;
+    }
+
+    // 게시글 작성 시 등록 주식 표시
+    @Transactional
+    public void registerStock(String stockName) {
+        Stock stock = stockRepository.findByStockName(stockName).orElseThrow(
+                () -> new NullPointerException("종목이 존재하지 않습니다.")
+        );
+        stock.setRegistered(true);
+        stockRepository.save(stock);
     }
 }
