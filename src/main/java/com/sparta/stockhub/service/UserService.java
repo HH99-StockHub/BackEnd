@@ -51,7 +51,7 @@ public class UserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "12c4e96969c4b50ad263268577cdcb76");
-        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+        body.add("redirect_uri", "http://stockhub.co.kr.s3-website.ap-northeast-2.amazonaws.com/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청
@@ -118,7 +118,6 @@ public class UserService {
         String token = JwtTokenUtils.generateJwtToken(userDetailsJwt);
 
         response.addHeader("Authorization", "BEARER " + token);
-        System.out.println("BEARER " + token);
         response.addHeader("userId", String.valueOf(user.getUserId()));
         response.addHeader("profileImage", user.getProfileImage());
     }

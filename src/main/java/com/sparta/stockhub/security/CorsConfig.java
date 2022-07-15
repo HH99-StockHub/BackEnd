@@ -16,7 +16,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("http://stockhub.co.kr.s3-website.ap-northeast-2.amazonaws.com/");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.addExposedHeader("*");
