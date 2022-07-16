@@ -1,3 +1,4 @@
+
 package com.sparta.stockhub.controller;
 
 import com.sparta.stockhub.dto.requestDto.ArticleRequestDto;
@@ -92,7 +93,8 @@ public class ArticleController {
     // 게시글: 게시글 내용 조회
     @GetMapping("/articles/{articleId}")
     public ArticleResponseDto readArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId) {
-        return articleService.readArticle(userDetails, articleId);
+        if (userDetails != null) return articleService.readArticleLoggedIn(userDetails.getUser(), articleId);
+        else return articleService.readArticle(articleId);
     }
 
     // 게시글: 찬성 투표
@@ -117,3 +119,4 @@ public class ArticleController {
         articleService.deleteArticle(userDetails, articleId);
     }
 }
+
