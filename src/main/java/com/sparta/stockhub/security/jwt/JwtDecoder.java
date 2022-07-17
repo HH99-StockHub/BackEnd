@@ -40,7 +40,7 @@ public class JwtDecoder {
         return username;
     }
 
-    private Optional<DecodedJWT> isValidToken(String token) {
+    public Optional<DecodedJWT> isValidToken(String token) { // 주희 : private -> public 으로 변경
 
         DecodedJWT jwt = null;
 
