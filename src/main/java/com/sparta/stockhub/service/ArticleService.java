@@ -234,7 +234,7 @@ public class ArticleService {
     }
 
     // 인기글 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
-    public List<ArticleListResponseDto> readPopularArticles() {
+    public Page<ArticleListResponseDto> readPopularArticles(int page, int size) {
         List<Article> articleList = articleRepository.findAllByPopularListOrderByCreatedAtDesc(true);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
@@ -244,11 +244,20 @@ public class ArticleService {
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
         }
-        return responseDtoList;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
+        final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
+
+        return resultpage;
+
+
     }
 
     // 수익왕 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
-    public List<ArticleListResponseDto> readRichArticles() {
+    public Page<ArticleListResponseDto> readRichArticles(int page, int size) {
         List<Article> articleList = articleRepository.findAllByRichListOrderByCreatedAtDesc(true);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
@@ -258,11 +267,17 @@ public class ArticleService {
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
         }
-        return responseDtoList;
+        Pageable pageable = PageRequest.of(page, size);
+
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
+        final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
+
+        return resultpage;
     }
 
     // 모아보기 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
-    public List<ArticleListResponseDto> readUserArticles(Long userId) {
+    public Page<ArticleListResponseDto> readUserArticles(Long userId, int page, int size) {
         List<Article> articleList = articleRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
@@ -272,7 +287,13 @@ public class ArticleService {
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
         }
-        return responseDtoList;
+        Pageable pageable = PageRequest.of(page, size);
+
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
+        final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
+
+        return resultpage;
     }
 
     // 게시글: 게시글 내용 조회 (로그인 사용자) //////////////////// 수정 필요
