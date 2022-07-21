@@ -6,9 +6,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ChatMessageDto {
+public class ChatMessageDto { //재수정
 
     private ChatMessage.MessageType type; //메세지 타입
     private String roomId;
+    private Long userId;
+    private String sender;
     private String message;
+    private String createdAt;
 }

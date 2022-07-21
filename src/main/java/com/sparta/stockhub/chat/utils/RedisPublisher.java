@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RedisPublisher {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate; // Redis 서버에 Redis 커맨드를 수행하기 위한 high-level-abstractions을 제공
 
     public void publish(ChannelTopic topic, ChatMessage message) {
         log.info("publish");
