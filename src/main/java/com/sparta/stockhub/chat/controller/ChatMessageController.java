@@ -8,8 +8,10 @@ import com.sparta.stockhub.security.jwt.JwtAuthProvider;
 import com.sparta.stockhub.security.jwt.JwtDecoder;
 import com.sparta.stockhub.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,23 +23,26 @@ import java.util.TimeZone;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class ChatMessageController { //재수정
 
     private final ChatMessageService chatMessageService;
     private final JwtDecoder jwtDecoder;
+    private final UserService userService;
+    private final JwtAuthProvider jwtAuthProvider;
+    private UserDetailsImpl userDetails;
 
-//    @Autowired
-//    public ChatMessageController(ChatMessageService chatMessageService, UserService userService, JwtDecoder jwtDecoder, JwtAuthProvider jwtAuthProvider) {
-//        this.chatMessageService = chatMessageService;
-//        this.userService = userService;
-//        this.jwtDecoder = jwtDecoder;
-//        this.jwtAuthProvider = jwtAuthProvider;
-//    }
+    @Autowired
+    public ChatMessageController(ChatMessageService chatMessageService, UserService userService, JwtDecoder jwtDecoder, JwtAuthProvider jwtAuthProvider) {
+        this.chatMessageService = chatMessageService;
+        this.userService = userService;
+        this.jwtDecoder = jwtDecoder;
+        this.jwtAuthProvider = jwtAuthProvider;
+    }
     // 채팅 메시지를 @MessageMapping 형태로 받는다
     // 웹소켓으로 publish 된 메시지를 받는 곳이다
     @MessageMapping("/api/chat/message")
-    public void message(@RequestBody ChatMessageDto chatMessageDto, @Header("token") String token, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public void message(@RequestBody ChatMessageDto chatMessageDto, @Header("token") String token) { //@AuthenticationPrincipal
         String username = jwtDecoder.decodeUsername(token);
 //        chatMessageDto.setUserId(user.getUserId);
         chatMessageDto.setSender(username); //
@@ -50,10 +55,10 @@ public class ChatMessageController { //재수정
         String dateResult = dateFormat.format(date);
         chatMessageDto.setCreatedAt(dateResult);
 
-        // DTO 로 채팅 메시지 객체 생성
+         //DTO 로 채팅 메시지 객체 생성
         ChatMessage chatMessage = new ChatMessage(chatMessageDto, userDetails);
 
-        // 웹소켓 통신으로 채팅방 토픽 구독자들에게 메시지 보내기
+         //웹소켓 통신으로 채팅방 토픽 구독자들에게 메시지 보내기
         chatMessageService.sendChatMessage(chatMessage);
 
         // MySql DB에 채팅 메시지 저장

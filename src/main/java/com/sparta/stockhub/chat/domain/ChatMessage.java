@@ -40,7 +40,7 @@ public class ChatMessage {
         this.type = chatMessageDto.getType();
         this.userName = userDetails.getUsername();
         this.roomId = chatMessageDto.getRoomId();
-        this.sender = chatMessageDto.getSender();
+        this.sender = userDetails.getUsername();
         this.message = chatMessageDto.getMessage();
         this.createdAt = chatMessageDto.getCreatedAt();
     }
