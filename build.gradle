@@ -42,9 +42,13 @@ dependencies {
 	// JSON
 	implementation group: 'org.json', name: 'json', version: '20160810'
 	// websocket
+	/*
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.webjars:stomp-websocket:2.3.3-1'
+	*/
+
 	//redis
+	/*
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'it.ozimov:embedded-redis:0.7.2'
 	implementation 'org.webjars.bower:bootstrap:4.3.1'
@@ -55,6 +59,14 @@ dependencies {
 	implementation 'com.google.code.gson:gson:2.8.0'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'javax.xml.bind:jaxb-api'
+	*/
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.springframework.boot:spring-boot-devtools'
+	implementation 'org.webjars:sockjs-client:1.5.1'
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+	implementation 'com.google.code.gson:gson:2.9.0'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 tasks.named('test') {
