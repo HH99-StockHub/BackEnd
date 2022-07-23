@@ -76,21 +76,25 @@ public class ArticleController {
     public Page<ArticleListResponseDto> readPopularArticles(
             @RequestParam("page") int page,
             @RequestParam("size") int size
-    ) { return articleService.readPopularArticles(page, size); }
+    ) { page = page - 1;
+        return articleService.readPopularArticles(page, size); }
 
     // 수익왕 게시판: 게시글 목록 조회
     @GetMapping("/rich/articles")
     public Page<ArticleListResponseDto> readRichArticles(
             @RequestParam("page") int page,
             @RequestParam("size") int size
-    ) { return articleService.readRichArticles(page, size); }
+    ) { page = page - 1;
+        return articleService.readRichArticles(page, size); }
 
     // 모아보기 게시판: 게시글 목록 조회
     @GetMapping("/user/{userId}/articles")
     public Page<ArticleListResponseDto> readUserArticles(
             @RequestParam("page") int page,
             @RequestParam("size") int size,
-            @PathVariable Long userId) { return articleService.readUserArticles(userId, page, size);}
+            @PathVariable Long userId) {
+        page = page - 1;
+        return articleService.readUserArticles(userId, page, size);}
 
     // 모아보기 게시판: 내 게시글 목록 조회
     @GetMapping("/user/my/articles")
@@ -98,7 +102,7 @@ public class ArticleController {
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if (userDetails != null) return articleService.readUserArticles(userDetails.getUser().getUserId(), page, size);
+        if (userDetails != null){ page = page - 1; return articleService.readUserArticles(userDetails.getUser().getUserId(), page, size);}
         else throw new IllegalArgumentException("로그인이 필요합니다.");
     }
 
