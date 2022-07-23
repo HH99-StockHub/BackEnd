@@ -23,7 +23,7 @@ public class StockService {
         return stocks;
     }
 
-    // 주식: 저장된 현재가 조회
+    // 주식: 종목 현재가 조회
     public int getStockPrice(String stockName) {
         Stock stock = stockRepository.findByStockName(stockName).orElseThrow(
                 () -> new NullPointerException("종목이 존재하지 않습니다.")

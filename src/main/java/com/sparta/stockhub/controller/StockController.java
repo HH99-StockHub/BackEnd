@@ -21,7 +21,7 @@ public class StockController {
         return stockService.getStocks();
     }
 
-    // 주식: 저장된 현재가 조회
+    // 주식: 종목 현재가 조회
     @GetMapping("/stock/price/{stockName}")
     public int getStockPrice(@PathVariable String stockName) {
         return stockService.getStockPrice(stockName);
