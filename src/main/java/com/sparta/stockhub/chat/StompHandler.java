@@ -21,7 +21,7 @@ public class StompHandler implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         if (StompCommand.CONNECT == accessor.getCommand()) {
-            jwtDecoder.decodeUsername(headerTokenExtractor.extract(accessor.getFirstNativeHeader("token")));
+           // jwtDecoder.decodeUsername(headerTokenExtractor.extract(accessor.getFirstNativeHeader("token"))); // FE token 삭제 요청으로 수정
         }
         return message;
     }
