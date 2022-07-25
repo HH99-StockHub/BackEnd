@@ -22,7 +22,8 @@ public class CommentController {
     private final CommentService commentService;
 
     private final NotificationService notificationService;
-    private ArticleRepository articleRepository;
+
+    private final ArticleRepository articleRepository;
 
 
     // 게시글: 댓글 목록 조회
@@ -39,16 +40,13 @@ public class CommentController {
         if (userDetails != null) commentService.createComment(userDetails, articleId, requestDto);
 
         String userNickname = userDetails.getUser().getNickname();
-
+        Long commentUserId = userDetails.getUser().getUserId();
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
 
-        String articleTitle = article.getArticleTitle();
-
-        String articleUserId = article.getUserId().toString();
-
-        notificationService.sendPrivateNotificationComment(userNickname, articleTitle, articleUserId);
+        Long articleUserId = article.getUserId();
+        notificationService.sendPrivateNotificationComment(userNickname, articleUserId, articleId, commentUserId);
         return true;
     }
 
