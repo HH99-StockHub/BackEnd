@@ -64,8 +64,17 @@ public class ArticleService {
         int stockPriceLast = stockService.getStockPrice(stockName);
         double stockReturn = stockService.getStockReturn(stockPriceFirst, stockPriceLast);
 
-        Article article = new Article(userId, articleTitle, stockName, stockPriceFirst, stockPriceLast, stockReturn,
-                point1, content1, point2, content2, point3, content3);
+        LocalDateTime deadline = LocalDateTime.now(); // 수익률 추적 데드라인 세팅
+        String timeLimit = requestDto.getTimeLimit();
+        if (timeLimit == "2주") deadline.plusWeeks(2);
+        else if (timeLimit == "1개월") deadline.plusMonths(1);
+        else if (timeLimit == "3개월") deadline.plusMonths(3);
+        else if (timeLimit == "6개월") deadline.plusMonths(6);
+        else if (timeLimit == "1년") deadline.plusYears(1);
+        else if (timeLimit == "2년") deadline.plusYears(2);
+        else if (timeLimit == "3년") deadline.plusYears(3);
+
+        Article article = new Article(userId, requestDto, deadline, stockPriceFirst, stockPriceLast, stockReturn);
 
         stockService.registerStock(stockName);
 

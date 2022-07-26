@@ -1,5 +1,6 @@
 package com.sparta.stockhub.domain;
 
+import com.sparta.stockhub.dto.requestDto.ArticleRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -54,6 +55,12 @@ public class Article extends Timestamped {
     String content3;
 
     @Column
+    LocalDateTime deadline;
+
+    @Column
+    int targetReturn;
+
+    @Column
     int voteUpCount;
 
     @Column
@@ -74,20 +81,21 @@ public class Article extends Timestamped {
     @Column
     LocalDateTime richRegTime; // 수익왕 게시판 등록 시간
 
-    public Article(Long userId, String articleTitle, String stockName, int stockPriceFirst, int stockPriceLast, double stockReturn,
-                   String point1, String content1, String point2, String content2, String point3, String content3) {
+    public Article(Long userId, ArticleRequestDto requestDto, LocalDateTime deadline, int stockPriceFirst, int stockPriceLast, double stockReturn) {
         this.userId = userId;
-        this.articleTitle = articleTitle;
-        this.stockName = stockName;
+        this.articleTitle = requestDto.getArticleTitle();
+        this.stockName = requestDto.getStockName();
         this.stockPriceFirst = stockPriceFirst;
         this.stockPriceLast = stockPriceLast;
         this.stockReturn = stockReturn;
-        this.point1 = point1;
-        this.content1 = content1;
-        this.point2 = point2;
-        this.content2 = content2;
-        this.point3 = point3;
-        this.content3 = content3;
+        this.point1 = requestDto.getPoint1();
+        this.content1 = requestDto.getContent1();
+        this.point2 = requestDto.getPoint2();
+        this.content2 = requestDto.getContent2();
+        this.point3 = requestDto.getPoint3();
+        this.content3 = requestDto.getContent3();
+        this.deadline = deadline;
+        this.targetReturn = requestDto.getTargetReturn();
         this.voteUpCount = 0;
         this.voteDownCount = 0;
         this.viewCount = 0;

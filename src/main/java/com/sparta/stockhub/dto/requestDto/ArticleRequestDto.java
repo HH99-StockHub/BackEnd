@@ -12,4 +12,6 @@ public class ArticleRequestDto {
     private String content2;
     private String point3;
     private String content3;
+    private String timeLimit;
+    private int targetReturn;
 }

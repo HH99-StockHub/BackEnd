@@ -27,6 +27,8 @@ public class ArticleResponseDto {
     private String content2;
     private String point3;
     private String content3;
+    private LocalDateTime deadline;
+    private int targetReturn;
     private int voteUpCount;
     private int voteDownCount;
     private int commentCount;
@@ -49,6 +51,8 @@ public class ArticleResponseDto {
         this.content2 = article.getContent2();
         this.point3 = article.getPoint3();
         this.content3 = article.getContent3();
+        this.deadline = article.getDeadline();
+        this.targetReturn = article.getTargetReturn();
         this.voteUpCount = article.getVoteUpCount();
         this.voteDownCount = article.getVoteDownCount();
         this.commentCount = commentCount;
