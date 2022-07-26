@@ -150,8 +150,6 @@ public class UserService {
         Matcher matcher = pattern.matcher(newNickname);
         if (!matcher.find()) throw new IllegalArgumentException("유효하지 않은 닉네임입니다.");
 
-        if (userRepository.findByNickname(newNickname).isPresent()) throw new IllegalArgumentException("존재하는 닉네임입니다."); // 중복 검사
-
         String[] curseWords = { // 욕설 검사
                 "개걸레", "개보지", "개씨발", "개좆", "개지랄", "걸레년",
                 "느검마", "느금", "니기미", "니애미", "니애비", "닝기미",
