@@ -147,7 +147,7 @@ public class ArticleService {
         List<Article> articleList = articleRepository.findAllByOrderByCreatedAtDesc();
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
-            if (i == 10) break; // 메인 페이지에 내릴 때는 최신 게시글 10개만 반환
+            if (i == 9) break; // 메인 페이지에 내릴 때는 최신 게시글 9개만 반환
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
                     () -> new NullPointerException("유저가 존재하지 않습니다.")
             );
