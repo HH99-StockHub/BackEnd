@@ -1,6 +1,7 @@
 package com.sparta.stockhub.service;
 
 import com.sparta.stockhub.domain.Stock;
+import com.sparta.stockhub.dto.responseDto.StockResponseDto;
 import com.sparta.stockhub.exceptionHandler.CustomException;
 import com.sparta.stockhub.exceptionHandler.ErrorCode;
 import com.sparta.stockhub.repository.ArticleRepository;
@@ -29,6 +30,15 @@ public class StockService {
                 () -> new NullPointerException("종목이 존재하지 않습니다.")
         );
         return stock.getStockPrice();
+    }
+
+    // 주식: 종목 상세정보 조회
+    public StockResponseDto getStockDetails(String stockName) {
+        Stock stock = stockRepository.findByStockName(stockName).orElseThrow(
+                () -> new NullPointerException("종목이 존재하지 않습니다.")
+        );
+        StockResponseDto responseDto = new StockResponseDto(stock);
+        return responseDto;
     }
 
     // 종목 수익률 계산
