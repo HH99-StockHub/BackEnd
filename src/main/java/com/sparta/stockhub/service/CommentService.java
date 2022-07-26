@@ -54,7 +54,7 @@ public class CommentService {
         Comment newComment = new Comment(loginId, articleId, comments);
         commentRepository.save(newComment);
 
-        User user = userDetails.getUser();
+        User user = userDetails.getUser(); // 경험치 5점 획득
         user.setExperience(user.getExperience() + 5);
         userService.updateRank(user);
     }
@@ -70,7 +70,7 @@ public class CommentService {
 
         commentRepository.deleteById(commentId);
 
-        User user = userDetails.getUser();
+        User user = userDetails.getUser(); // 경험치 5점 감소
         user.setExperience(user.getExperience() - 5);
         userService.updateRank(user);
     }

@@ -70,7 +70,7 @@ public class ArticleService {
 
         articleRepository.save(article);
 
-        User user = userDetails.getUser();
+        User user = userDetails.getUser(); // 경험치 30점 획득
         user.setExperience(user.getExperience() + 30);
         userService.updateRank(user);
     }
@@ -321,6 +321,7 @@ public class ArticleService {
                 voteUpRepository.save(myVote);
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
                 checkPopularList(article);
+
             }
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEUP); // 이미 찬성을 한 경우
@@ -377,7 +378,7 @@ public class ArticleService {
         List<Comment> commentList = commentRepository.findAllByArticleId(articleId); // 해당 게시글 댓글 삭제
         for (int i = 0; i < commentList.size(); i++) commentRepository.delete(commentList.get(i));
 
-        User user = userDetails.getUser();
+        User user = userDetails.getUser(); // 경험치 30점 감소
         user.setExperience(user.getExperience() - 30);
         userService.updateRank(user);
     }
@@ -414,10 +415,32 @@ public class ArticleService {
     // 인기글 등록/해제 검사
     @Transactional
     public void checkPopularList(Article article) {
-        if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0) article.setPopularList(true);
+
+        long userId = article.getUserId();
+        boolean preCheck = article.isPopularList();
+
+        if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0)
+            article.setPopularList(true);
         else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2)
             article.setPopularList(true);
         else article.setPopularList(false);
+
+        boolean postCheck = article.isPopularList();
+
+        if (preCheck == false && postCheck == true) { // 경험치 50점 획득
+            User user = userRepository.findById(userId).orElseThrow(
+                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+            );
+            user.setExperience(user.getExperience() + 50);
+            userService.updateRank(user);
+        }
+        if (preCheck == true && postCheck == false) { // 경험치 50점 감소
+            User user = userRepository.findById(userId).orElseThrow(
+                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+            );
+            user.setExperience(user.getExperience() - 50);
+            userService.updateRank(user);
+        }
     }
 
     // 게시글 등록 종목 현재가 및 수익률 업데이트 //////////////////// 스케쥴러 연동 완료
