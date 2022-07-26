@@ -28,8 +28,10 @@ public class ArticleService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final StockService stockService;
+    private final UserService userService;
 
     // 게시글 작성
+    @Transactional
     public void createArticle(UserDetailsImpl userDetails, ArticleRequestDto requestDto) {
         Long userId = userDetails.getUser().getUserId();
         String articleTitle = requestDto.getArticleTitle();
@@ -67,6 +69,10 @@ public class ArticleService {
         stockService.registerStock(stockName);
 
         articleRepository.save(article);
+
+        User user = userDetails.getUser();
+        user.setExperience(user.getExperience() + 30);
+        userService.updateRank(user);
     }
 
     // 게시글 검색
@@ -370,6 +376,10 @@ public class ArticleService {
 
         List<Comment> commentList = commentRepository.findAllByArticleId(articleId); // 해당 게시글 댓글 삭제
         for (int i = 0; i < commentList.size(); i++) commentRepository.delete(commentList.get(i));
+
+        User user = userDetails.getUser();
+        user.setExperience(user.getExperience() - 30);
+        userService.updateRank(user);
     }
 
     // 게시글 찬성 표 집계

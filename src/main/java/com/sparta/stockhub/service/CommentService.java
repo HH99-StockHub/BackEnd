@@ -25,6 +25,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     // 게시글: 댓글 목록 조회
     public List<CommentResponseDto> readComments(Long articleId) {
@@ -41,6 +42,7 @@ public class CommentService {
     }
 
     // 게시글: 댓글 작성
+    @Transactional
     public void createComment(UserDetailsImpl userDetails, Long articleId, CommentRequestDto requestDto) {
         String comments = requestDto.getComments();
         Long loginId = userDetails.getUser().getUserId();
@@ -51,6 +53,10 @@ public class CommentService {
         if (comments.length() > 300) throw new CustomException(ErrorCode.BAD_REQUEST_COMMENTLENGTH);
         Comment newComment = new Comment(loginId, articleId, comments);
         commentRepository.save(newComment);
+
+        User user = userDetails.getUser();
+        user.setExperience(user.getExperience() + 5);
+        userService.updateRank(user);
     }
 
     // 게시글: 댓글 삭제
@@ -64,6 +70,9 @@ public class CommentService {
 
         commentRepository.deleteById(commentId);
 
+        User user = userDetails.getUser();
+        user.setExperience(user.getExperience() - 5);
+        userService.updateRank(user);
     }
 
     // 댓글 욕설 필터링

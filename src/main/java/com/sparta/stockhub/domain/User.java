@@ -28,10 +28,18 @@ public class User {
     @Column(nullable = false)
     private String profileImage;
 
+    @Column(nullable = false)
+    private String rank;
+
+    @Column(nullable = false)
+    private int experience;
+
     public User(String username, String password, String nickname, String profileImage) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.profileImage = profileImage;
+        this.rank = "하수";
+        this.experience = 0;
     }
 }

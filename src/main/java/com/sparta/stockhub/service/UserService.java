@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.stockhub.domain.User;
+import com.sparta.stockhub.repository.ArticleRepository;
 import com.sparta.stockhub.repository.UserRepository;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import com.sparta.stockhub.security.jwt.JwtTokenUtils;
@@ -22,6 +23,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -119,6 +122,21 @@ public class UserService {
 
         response.addHeader("Authorization", "BEARER " + token);
         response.addHeader("userId", String.valueOf(user.getUserId()));
+        response.addHeader("nickname", user.getNickname());
         response.addHeader("profileImage", user.getProfileImage());
+        response.addHeader("rank", user.getRank());
+        response.addHeader("experience", String.valueOf(user.getExperience()));
+    }
+
+    // 유저 랭크 업데이트
+    @Transactional
+    public void updateRank(User user) {
+
+        int exp = user.getExperience();
+        if (exp < 10) user.setRank("하수");
+        else if (exp < 100) user.setRank("초보");
+        else if (exp < 200) user.setRank("중수");
+        else if (exp < 500) user.setRank("고수");
+        else user.setRank("지존");
     }
 }
