@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -181,7 +182,7 @@ public class ArticleService {
 
     // 메인: 인기글 목록 조회
     public List<ArticleListResponseDto> readMainPopularArticles() {
-        List<Article> articleList = articleRepository.findAllByPopularListOrderByCreatedAtDesc(true);
+        List<Article> articleList = articleRepository.findAllByPopularListOrderByPopularRegTimeDesc(true);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 6) break; // 최신 인기글 6개만 반환
@@ -196,7 +197,7 @@ public class ArticleService {
 
     // 메인: 수익왕 목록 조회
     public List<ArticleListResponseDto> readMainRichArticles() {
-        List<Article> articleList = articleRepository.findAllByRichListOrderByCreatedAtDesc(true);
+        List<Article> articleList = articleRepository.findAllByRichListOrderByRichRegTimeDesc(true);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 6) break; // 최신 수익왕 6개만 반환
@@ -225,7 +226,7 @@ public class ArticleService {
 
     // 인기글 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
     public List<ArticleListResponseDto> readPopularArticles() {
-        List<Article> articleList = articleRepository.findAllByPopularListOrderByCreatedAtDesc(true);
+        List<Article> articleList = articleRepository.findAllByPopularListOrderByPopularRegTimeDesc(true);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
@@ -239,7 +240,7 @@ public class ArticleService {
 
     // 수익왕 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
     public List<ArticleListResponseDto> readRichArticles() {
-        List<Article> articleList = articleRepository.findAllByRichListOrderByCreatedAtDesc(true);
+        List<Article> articleList = articleRepository.findAllByRichListOrderByRichRegTimeDesc(true);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
@@ -416,6 +417,7 @@ public class ArticleService {
             );
             user.setExperience(user.getExperience() + 50);
             userService.updateRank(user);
+            article.setPopularRegTime(LocalDateTime.now());
         }
         if (preCheck == true && postCheck == false) { // 경험치 50점 감소
             User user = userRepository.findById(userId).orElseThrow(
@@ -439,10 +441,14 @@ public class ArticleService {
     // 수익왕 등록/해제 검사 //////////////////// 스케쥴러 연동 완료
     @Transactional
     public void checkRichList() {
+
         List<Article> articleList = articleRepository.findAll();
         for (int i = 0; i < articleList.size(); i++) {
+            boolean preCheck = articleList.get(i).isRichList();
             if (articleList.get(i).getStockReturn() >= 5) articleList.get(i).setRichList(true);
             else articleList.get(i).setRichList(false);
+            boolean postCheck = articleList.get(i).isRichList();
+            if (preCheck == false && postCheck == true) articleList.get(i).setRichRegTime(LocalDateTime.now());
         }
     }
 

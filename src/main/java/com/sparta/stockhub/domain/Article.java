@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -65,7 +66,13 @@ public class Article extends Timestamped {
     boolean popularList; // 인기글 게시판 등록 여부
 
     @Column
+    LocalDateTime popularRegTime; // 인기글 게시판 등록 시간
+
+    @Column
     boolean richList; // 수익왕 게시판 등록 여부
+
+    @Column
+    LocalDateTime richRegTime; // 수익왕 게시판 등록 시간
 
     public Article(Long userId, String articleTitle, String stockName, int stockPriceFirst, int stockPriceLast, double stockReturn,
                    String point1, String content1, String point2, String content2, String point3, String content3) {
@@ -86,6 +93,8 @@ public class Article extends Timestamped {
         this.viewCount = 0;
         this.popularList = false;
         this.richList = false;
+        this.popularRegTime = null;
+        this.richRegTime = null;
     }
 
 

@@ -17,9 +17,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     List<Article> findAllByRichListOrderByStockReturnDesc(boolean richList);
 
-    List<Article> findAllByPopularListOrderByCreatedAtDesc(boolean popularList);
+    List<Article> findAllByPopularListOrderByPopularRegTimeDesc(boolean popularList);
 
-    List<Article> findAllByRichListOrderByCreatedAtDesc(boolean richList);
+    List<Article> findAllByRichListOrderByRichRegTimeDesc(boolean richList);
 
     List<Article> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 
