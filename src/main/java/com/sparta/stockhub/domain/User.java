@@ -39,7 +39,7 @@ public class User {
         this.password = password;
         this.nickname = nickname;
         this.profileImage = profileImage;
-        this.rank = "하수";
+        this.rank = "신입";
         this.experience = 0;
     }
 }

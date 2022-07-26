@@ -133,7 +133,7 @@ public class UserService {
     public void updateRank(User user) {
 
         int exp = user.getExperience();
-        if (exp < 10) user.setRank("하수");
+        if (exp < 10) user.setRank("신입");
         else if (exp < 100) user.setRank("초보");
         else if (exp < 200) user.setRank("중수");
         else if (exp < 500) user.setRank("고수");
