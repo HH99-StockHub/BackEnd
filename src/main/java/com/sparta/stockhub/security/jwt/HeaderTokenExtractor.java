@@ -1,5 +1,6 @@
 package com.sparta.stockhub.security.jwt;
 
+import org.springframework.messaging.support.NativeMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,14 @@ public class HeaderTokenExtractor {
             throw new NoSuchElementException("No JWT");
         }
 
+        return header.substring(HEADER_PREFIX.length());
+    }
+
+    //주희 추가
+    public String extract(String header) {
+        if (header == null || header.equals("") || header.length() < HEADER_PREFIX.length()) {
+            throw new NoSuchElementException("No JWT");
+        }
         return header.substring(HEADER_PREFIX.length());
     }
 }

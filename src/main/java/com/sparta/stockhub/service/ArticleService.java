@@ -1,5 +1,6 @@
 package com.sparta.stockhub.service;
 
+import com.sparta.stockhub.chat.NotificationService;
 import com.sparta.stockhub.domain.*;
 import com.sparta.stockhub.dto.requestDto.ArticleRequestDto;
 import com.sparta.stockhub.dto.responseDto.ArticleListResponseDto;
@@ -32,6 +33,8 @@ public class ArticleService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final StockService stockService;
+
+    private final NotificationService notificationService;
 
     // 게시글 작성
     public void createArticle(UserDetailsImpl userDetails, ArticleRequestDto requestDto) {
@@ -331,6 +334,7 @@ public class ArticleService {
     // 게시글: 찬성 투표
     @Transactional
     public void voteUp(UserDetailsImpl userDetails, Long articleId) {
+
         Long loginId = userDetails.getUser().getUserId();
         VoteUp oldVote = voteUpRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 찬성 투표를 했는지 여부 확인
         VoteDown oppositeVote = voteDownRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 반대 투표를 했는지 여부 확인
@@ -346,12 +350,22 @@ public class ArticleService {
                 voteDownRepository.delete(oppositeVote);
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
                 article.setVoteDownCount(article.getVoteDownCount() - 1);
-                checkPopularList(article);
+                checkPopularListUp(article);
+
+                Long articleUserId = article.getUserId();
+                String userNickname = userDetails.getUser().getNickname();
+
+                notificationService.sendPrivateNotificationLike(userNickname, articleUserId, articleId);
             } else {
                 VoteUp myVote = new VoteUp(articleId, loginId); // 해당 게시글에 투표를 처음 하는 경우
                 voteUpRepository.save(myVote);
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
-                checkPopularList(article);
+                checkPopularListUp(article);
+
+                Long articleUserId = article.getUserId();
+                String userNickname = userDetails.getUser().getNickname();
+
+                notificationService.sendPrivateNotificationLike(userNickname, articleUserId, articleId);
             }
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEUP); // 이미 찬성을 한 경우
@@ -441,9 +455,24 @@ public class ArticleService {
     // 인기글 등록/해제 검사
     @Transactional
     public void checkPopularList(Article article) {
-        if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0) article.setPopularList(true);
-        else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2)
+        if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0)article.setPopularList(true);
+        else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2) article.setPopularList(true);
+        else article.setPopularList(false);
+    }
+
+    @Transactional
+    public void checkPopularListUp(Article article) {
+        String articleTitle = article.getArticleTitle();
+        Long articleUserId = article.getUserId();
+        Long articleId = article.getArticleId();
+        if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0){
             article.setPopularList(true);
+            if(article.getVoteUpCount()-1 < 3) notificationService.sendPrivateNotificationVote(articleTitle, articleUserId, articleId);
+        }
+        else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2){
+            article.setPopularList(true);
+            if(article.getVoteUpCount()-1 / article.getVoteDownCount() < 2)notificationService.sendPrivateNotificationVote(articleTitle, articleUserId, articleId);
+        }
         else article.setPopularList(false);
     }
 
@@ -462,7 +491,13 @@ public class ArticleService {
     public void checkRichList() {
         List<Article> articleList = articleRepository.findAll();
         for (int i = 0; i < articleList.size(); i++) {
-            if (articleList.get(i).getStockReturn() >= 5) articleList.get(i).setRichList(true);
+            if (articleList.get(i).getStockReturn() >= 5){
+                String articleTitle = articleList.get(i).getArticleTitle();
+                Long articleUserId = articleList.get(i).getUserId();
+                Long articleId = articleList.get(i).getArticleId();
+                notificationService.sendPrivateNotificationRich(articleTitle, articleUserId, articleId);
+                articleList.get(i).setRichList(true);
+            }
             else articleList.get(i).setRichList(false);
         }
     }
