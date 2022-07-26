@@ -29,11 +29,15 @@ public class Notice extends Timestamped {
     @Column(nullable = false)
     private boolean noticeCheck;
 
+    @Column(nullable = false)
+    private String noticeCode;
 
-    public Notice(Long noticeUserId, Long noticeArticleId, String noticeMessage, boolean noticeCheck) {
+
+    public Notice(Long noticeUserId, Long noticeArticleId, String noticeMessage, boolean noticeCheck, String noticeCode) {
         this.noticeUserId = noticeUserId;
         this.noticeArticleId = noticeArticleId;
         this.noticeMessage = noticeMessage;
         this.noticeCheck = noticeCheck;
+        this.noticeCode = noticeCode;
     }
 }

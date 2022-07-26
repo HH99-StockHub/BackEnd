@@ -15,14 +15,15 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
 
 
-    public void createNotice(Long userId, Long articleId, String message, boolean check) {
+    public void createNotice(Long userId, Long articleId, String message, boolean check, String noticeCode) {
 
         Long noticeUserId = userId;
         Long noticeArticleId = articleId;
         String noticeMessage = message;
         boolean noticeCheck = check;
 
-        Notice newNotice = new Notice(noticeUserId, noticeArticleId , noticeMessage, noticeCheck);
+
+        Notice newNotice = new Notice(noticeUserId, noticeArticleId , noticeMessage, noticeCheck, noticeCode);
         noticeRepository.save(newNotice);
 
 

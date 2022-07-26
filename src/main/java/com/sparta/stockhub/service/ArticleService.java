@@ -297,6 +297,7 @@ public class ArticleService {
     // 게시글: 찬성 투표
     @Transactional
     public void voteUp(UserDetailsImpl userDetails, Long articleId) {
+
         Long loginId = userDetails.getUser().getUserId();
         VoteUp oldVote = voteUpRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 찬성 투표를 했는지 여부 확인
         VoteDown oppositeVote = voteDownRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 반대 투표를 했는지 여부 확인
@@ -313,11 +314,21 @@ public class ArticleService {
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
                 article.setVoteDownCount(article.getVoteDownCount() - 1);
                 checkPopularListUp(article);
+
+                Long articleUserId = article.getUserId();
+                String userNickname = userDetails.getUser().getNickname();
+
+                notificationService.sendPrivateNotificationLike(userNickname, articleUserId, articleId);
             } else {
                 VoteUp myVote = new VoteUp(articleId, loginId); // 해당 게시글에 투표를 처음 하는 경우
                 voteUpRepository.save(myVote);
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
                 checkPopularListUp(article);
+
+                Long articleUserId = article.getUserId();
+                String userNickname = userDetails.getUser().getNickname();
+
+                notificationService.sendPrivateNotificationLike(userNickname, articleUserId, articleId);
             }
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEUP); // 이미 찬성을 한 경우

@@ -1,32 +1,24 @@
 package com.sparta.stockhub.chat;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+@Getter
+@Setter
 public class ResponseMessage {
-    private String content;
+    private String noticeMessage;
 
     private Long articleId;
 
-    public ResponseMessage() {
-    }
+    private Long noticeId;
 
-    public ResponseMessage(String content, Long articleId) {
-        this.content = content;
+    private LocalDateTime noticeCreatedAt;
+
+    public ResponseMessage(String noticeMessage, Long articleId, Long noticeId, LocalDateTime noticeCreatedAt) {
+        this.noticeMessage = noticeMessage;
         this.articleId = articleId;
-    }
-
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Long getArticleId() {
-        return articleId;
-    }
-
-    public void setArticleId(Long articleId) {
-        this.articleId = articleId;
+        this.noticeId = noticeId;
+        this.noticeCreatedAt = noticeCreatedAt;
     }
 }

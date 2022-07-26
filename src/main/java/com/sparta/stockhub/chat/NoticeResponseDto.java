@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.persistence.Column;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -19,6 +20,8 @@ public class NoticeResponseDto {
     private String message;
 
     private boolean check;
+
+    private LocalDateTime createdAt;
 
 
 }
