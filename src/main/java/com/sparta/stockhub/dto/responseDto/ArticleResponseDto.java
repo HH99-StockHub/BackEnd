@@ -31,9 +31,8 @@ public class ArticleResponseDto {
     private int voteDownCount;
     private int commentCount;
     private int viewCount;
-    private int voteSign;
 
-    public ArticleResponseDto(Article article, User user, int commentCount, int voteSign) {
+    public ArticleResponseDto(Article article, User user, int commentCount) {
         this.articleId = article.getArticleId();
         this.createdAt = article.getCreatedAt();
         this.userId = article.getUserId();
@@ -54,6 +53,5 @@ public class ArticleResponseDto {
         this.voteDownCount = article.getVoteDownCount();
         this.commentCount = commentCount;
         this.viewCount = article.getViewCount();
-        this.voteSign = voteSign;
     }
 }

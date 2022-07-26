@@ -265,23 +265,7 @@ public class ArticleService {
         return responseDtoList;
     }
 
-    // 게시글: 게시글 내용 조회 (로그인 사용자) //////////////////// 수정 필요
-    @Transactional
-    public ArticleResponseDto readArticleLoggedIn(User loginUser, Long articleId) {
-        Article article = articleRepository.findByArticleId(articleId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
-        );
-        User user = userRepository.findById(article.getUserId()).orElseThrow(
-                () -> new NullPointerException("유저가 존재하지 않습니다.")
-        );
-        article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
-        int commentCount = countComment(article);
-        int voteSign = checkVoteSign(loginUser, article);
-        ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount, voteSign);
-        return responseDto;
-    }
-
-    // 게시글: 게시글 내용 조회 (비로그인 사용자) //////////////////// 수정 필요
+    // 게시글: 게시글 내용 조회
     @Transactional
     public ArticleResponseDto readArticle(Long articleId) {
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
@@ -292,9 +276,16 @@ public class ArticleService {
         );
         article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
         int commentCount = countComment(article);
-        int voteSign = 0;
-        ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount, voteSign);
+        ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount);
         return responseDto;
+    }
+
+    // 게시글: 로그인 사용자 투표 검사
+    public int checkVoteSign(User user, Long articleId) {
+        if (voteUpRepository.findByUserIdAndArticleId(user.getUserId(), articleId).isPresent()) return 1;
+        else if (voteDownRepository.findByUserIdAndArticleId(user.getUserId(), articleId).isPresent())
+            return -1;
+        else return 0;
     }
 
     // 게시글: 찬성 투표
@@ -402,14 +393,6 @@ public class ArticleService {
         List<Comment> commentList = commentRepository.findAllByArticleId(article.getArticleId());
         int commentCount = commentList.size();
         return commentCount;
-    }
-
-    // 게시글 찬성/반대 투표 검사
-    public int checkVoteSign(User user, Article article) {
-        if (voteUpRepository.findByUserIdAndArticleId(user.getUserId(), article.getArticleId()).isPresent()) return 1;
-        else if (voteDownRepository.findByUserIdAndArticleId(user.getUserId(), article.getArticleId()).isPresent())
-            return -1;
-        else return 0;
     }
 
     // 인기글 등록/해제 검사
