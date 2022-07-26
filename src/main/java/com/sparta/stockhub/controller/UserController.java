@@ -6,9 +6,7 @@ import com.sparta.stockhub.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,5 +26,13 @@ public class UserController {
     @PostMapping("/user/rank")
     public String getRank(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userDetails.getUser().getRank();
+    }
+
+    // 유저: 닉네임 변경
+    @PutMapping("/user/nickname")
+    public void changeNickname(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody String newNickname) {
+        if (userDetails != null) {
+            userService.changeNickname(userDetails.getUser(), newNickname);
+        }
     }
 }
