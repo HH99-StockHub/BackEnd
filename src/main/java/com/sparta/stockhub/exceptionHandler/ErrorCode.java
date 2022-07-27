@@ -27,7 +27,7 @@ public enum ErrorCode {
 
     // 406 Not Acceptable.
     NOT_ACCEPTABLE_NICKNAME(HttpStatus.NOT_ACCEPTABLE, "406_1", "유효하지 않은 형식의 닉네임입니다."),
-    NOT_ACCEPTABLE_CURSEWORDS(HttpStatus.NOT_ACCEPTABLE, "406_2", "욕설을 포함할 수 없습니다."),
+    NOT_ACCEPTABLE_CURSEWORDS(HttpStatus.NOT_ACCEPTABLE, "406_2", "비속어를 포함할 수 없습니다."),
 
     // 411 Length Required.
     BAD_REQUEST_TITLELENGTH(HttpStatus.LENGTH_REQUIRED, "411_1", "제목은 40자 이내로 작성해 주세요."),
