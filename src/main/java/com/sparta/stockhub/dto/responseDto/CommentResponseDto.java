@@ -13,17 +13,20 @@ public class CommentResponseDto {
 
     private Long commentId;
     private LocalDateTime createdAt;
+    private Long userId;
     private String nickname;
     private String profileImage;
+    private String rank;
     private String comments;
-    private Long userId;
+
 
     public CommentResponseDto(Comment comment, User user) {
         this.commentId = comment.getCommentId();
         this.createdAt = comment.getCreatedAt();
+        this.userId = user.getUserId();
         this.nickname = user.getNickname();
         this.profileImage = user.getProfileImage();
-        this.userId = user.getUserId();
+        this.rank = user.getRank();
         this.comments = comment.getComments();
     }
 }

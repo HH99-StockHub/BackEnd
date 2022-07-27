@@ -16,6 +16,7 @@ public class ArticleResponseDto {
     private Long userId;
     private String nickname;
     private String profileImage;
+    private String rank;
     private String articleTitle;
     private String stockName;
     private int stockPriceFirst;
@@ -40,6 +41,7 @@ public class ArticleResponseDto {
         this.userId = article.getUserId();
         this.nickname = user.getNickname();
         this.profileImage = user.getProfileImage();
+        this.rank = user.getRank();
         this.articleTitle = article.getArticleTitle();
         this.stockName = article.getStockName();
         this.stockPriceFirst = article.getStockPriceFirst();

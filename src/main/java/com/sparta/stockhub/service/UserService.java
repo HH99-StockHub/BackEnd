@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.stockhub.domain.User;
+import com.sparta.stockhub.dto.responseDto.UserResponseDto;
 import com.sparta.stockhub.repository.ArticleRepository;
 import com.sparta.stockhub.repository.UserRepository;
 import com.sparta.stockhub.security.UserDetailsImpl;
@@ -143,6 +144,12 @@ public class UserService {
         else if (exp < 200) user.setRank("중수");
         else if (exp < 500) user.setRank("고수");
         else user.setRank("지존");
+    }
+
+    // 유저: 사용자 랭크 조회
+    public UserResponseDto getRank(User user) {
+        UserResponseDto responseDto = new UserResponseDto(user);
+        return responseDto;
     }
 
     // 유저: 닉네임 변경

@@ -1,6 +1,7 @@
 package com.sparta.stockhub.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sparta.stockhub.dto.responseDto.UserResponseDto;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import com.sparta.stockhub.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,10 @@ public class UserController {
 
     // 유저: 사용자 랭크 조회
     @PostMapping("/user/rank")
-    public String getRank(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userDetails.getUser().getRank();
+    public UserResponseDto getRank(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails != null) {
+            return userService.getRank(userDetails.getUser());
+        } else throw new IllegalArgumentException("로그인이 필요합니다.");
     }
 
     // 유저: 닉네임 변경
