@@ -57,6 +57,7 @@ public class UserService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", "12c4e96969c4b50ad263268577cdcb76");
         body.add("redirect_uri", "http://stockhub.co.kr.s3-website.ap-northeast-2.amazonaws.com/user/kakao/callback");
+//        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청
@@ -122,12 +123,11 @@ public class UserService {
         UserDetailsImpl userDetailsJwt = ((UserDetailsImpl) authentication.getPrincipal());
         String token = JwtTokenUtils.generateJwtToken(userDetailsJwt);
 
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
         response.addHeader("Authorization", "BEARER " + token);
         response.addHeader("userId", String.valueOf(user.getUserId()));
-        response.addHeader("nickname", user.getNickname());
         response.addHeader("profileImage", user.getProfileImage());
-        response.addHeader("rank", user.getRank());
-        response.addHeader("experience", String.valueOf(user.getExperience()));
     }
 
     // 유저 랭크 업데이트

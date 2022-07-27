@@ -8,12 +8,11 @@ import com.sparta.stockhub.security.UserDetailsImpl;
 import com.sparta.stockhub.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class UserController {
 
@@ -25,8 +24,8 @@ public class UserController {
         userService.kakaoLogin(code, response);
     }
 
-    // 유저: 사용자 랭크 조회
-    @PostMapping("/user/rank")
+    // 유저: 사용자 상세정보 조회
+    @PostMapping("/userDetails")
     public UserResponseDto getRank(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails != null) {
             return userService.getRank(userDetails.getUser());
