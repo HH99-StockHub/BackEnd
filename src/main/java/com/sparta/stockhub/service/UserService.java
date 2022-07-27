@@ -165,10 +165,4 @@ public class UserService {
 
         user.setNickname(newNickname);
     }
-
-    // 채팅방에서 유저 검색 / 주희 주가
-    public String findByUsername(String userName) {
-        User user = userRepository.findByUsername(userName).orElseThrow(() -> new IllegalArgumentException("찾는 유저가 없음"));
-        return user.getUsername();
-    }
 }
