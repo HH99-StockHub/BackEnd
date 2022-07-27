@@ -35,6 +35,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+
     // 카카오 로그인
     public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
@@ -56,7 +57,9 @@ public class UserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "12c4e96969c4b50ad263268577cdcb76");
-        body.add("redirect_uri", "http://stockhub.co.kr.s3-website.ap-northeast-2.amazonaws.com/user/kakao/callback");
+        //body.add("redirect_uri", "http://stockhub.co.kr.s3-website.ap-northeast-2.amazonaws.com/user/kakao/callback");
+//        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청
@@ -161,5 +164,11 @@ public class UserService {
             if (newNickname.contains(curseWord)) throw new IllegalArgumentException("욕설을 포함할 수 없습니다.");
 
         user.setNickname(newNickname);
+    }
+
+    // 채팅방에서 유저 검색 / 주희 주가
+    public String findByUsername(String userName) {
+        User user = userRepository.findByUsername(userName).orElseThrow(() -> new IllegalArgumentException("찾는 유저가 없음"));
+        return user.getUsername();
     }
 }
