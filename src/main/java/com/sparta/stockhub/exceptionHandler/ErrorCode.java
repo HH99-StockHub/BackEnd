@@ -23,7 +23,7 @@ public enum ErrorCode {
     NOT_FOUND_ARTICLE(HttpStatus.NOT_FOUND, "404_1", "게시글이 존재하지 않습니다."),
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404_2", "댓글이 존재하지 않습니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "404_3", "사용자가 존재하지 않습니다"),
-    NOT_FOUND_STOCKNAME(HttpStatus.NOT_FOUND, "404_4", "사용자가 존재하지 않습니다"),
+    NOT_FOUND_STOCKNAME(HttpStatus.NOT_FOUND, "404_4", "종목이 존재하지 않습니다"),
 
     // 406 Not Acceptable.
     NOT_ACCEPTABLE_NICKNAME(HttpStatus.NOT_ACCEPTABLE, "406_1", "유효하지 않은 형식의 닉네임입니다."),
