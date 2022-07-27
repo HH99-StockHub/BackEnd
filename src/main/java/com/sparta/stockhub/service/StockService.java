@@ -27,7 +27,7 @@ public class StockService {
     // 주식: 종목 현재가 조회
     public int getStockPrice(String stockName) {
         Stock stock = stockRepository.findByStockName(stockName).orElseThrow(
-                () -> new NullPointerException("종목이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_STOCKNAME)
         );
         return stock.getStockPrice();
     }
@@ -35,7 +35,7 @@ public class StockService {
     // 주식: 종목 상세정보 조회
     public StockResponseDto getStockDetails(String stockName) {
         Stock stock = stockRepository.findByStockName(stockName).orElseThrow(
-                () -> new NullPointerException("종목이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_STOCKNAME)
         );
         StockResponseDto responseDto = new StockResponseDto(stock);
         return responseDto;
@@ -52,7 +52,7 @@ public class StockService {
     @Transactional
     public void registerStock(String stockName) {
         Stock stock = stockRepository.findByStockName(stockName).orElseThrow(
-                () -> new NullPointerException("종목이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_STOCKNAME)
         );
         stock.setRegistered(true);
         stockRepository.save(stock);

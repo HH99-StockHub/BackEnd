@@ -1,6 +1,8 @@
 package com.sparta.stockhub.service;
 
 import com.sparta.stockhub.domain.Chart;
+import com.sparta.stockhub.exceptionHandler.CustomException;
+import com.sparta.stockhub.exceptionHandler.ErrorCode;
 import com.sparta.stockhub.repository.ChartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,7 @@ public class ChartService {
     // 차트: 종목 차트 조회
     public Chart getChart(String stockName) {
         Chart chart = chartRepository.findByStockName(stockName).orElseThrow(
-                () -> new NullPointerException("종목이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_STOCKNAME)
         );
         return chart;
     }

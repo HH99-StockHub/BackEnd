@@ -86,7 +86,7 @@ public class ArticleService {
 
             for (int i = 0; i < articleList.size(); i++) {
                 User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                        () -> new NullPointerException("유저가 존재하지 않습니다.")
+                        () -> new CustomException(ErrorCode.NOT_FOUND_USER)
                 );
                 int commentCount = countComment(articleList.get(i));
 
@@ -105,7 +105,7 @@ public class ArticleService {
                     if (keyword.equals("")) continue; // 공백이 2번 이상 연속된 경우 생기는 검색어 skip
 
                     User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                            () -> new NullPointerException("유저가 존재하지 않습니다.")
+                            () -> new CustomException(ErrorCode.NOT_FOUND_USER)
                     );
                     int commentCount = countComment(articleList.get(i));
 
@@ -141,7 +141,7 @@ public class ArticleService {
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 10) break; // 메인 페이지에 내릴 때는 최신 게시글 10개만 반환
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
@@ -156,7 +156,7 @@ public class ArticleService {
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 3) break; // 명예의 전당은 인기도 상위 게시글 3개만 반환
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
@@ -171,7 +171,7 @@ public class ArticleService {
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 3) break; // 명예의 전당은 수익률 상위 게시글 3개만 반환
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
@@ -186,7 +186,7 @@ public class ArticleService {
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 6) break; // 최신 인기글 6개만 반환
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
@@ -201,7 +201,7 @@ public class ArticleService {
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 6) break; // 최신 수익왕 6개만 반환
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
@@ -215,7 +215,7 @@ public class ArticleService {
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
@@ -229,7 +229,7 @@ public class ArticleService {
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
@@ -243,7 +243,7 @@ public class ArticleService {
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
@@ -257,7 +257,7 @@ public class ArticleService {
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
@@ -272,7 +272,7 @@ public class ArticleService {
                 () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
         );
         User user = userRepository.findById(article.getUserId()).orElseThrow(
-                () -> new NullPointerException("유저가 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND_USER)
         );
         article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
         int commentCount = countComment(article);
@@ -412,14 +412,14 @@ public class ArticleService {
 
         if (preCheck == false && postCheck == true) { // 경험치 50점 획득
             User user = userRepository.findById(userId).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             user.setExperience(user.getExperience() + 50);
             userService.updateRank(user);
         }
         if (preCheck == true && postCheck == false) { // 경험치 50점 감소
             User user = userRepository.findById(userId).orElseThrow(
-                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+                    () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
             user.setExperience(user.getExperience() - 50);
             userService.updateRank(user);

@@ -3,6 +3,8 @@ package com.sparta.stockhub.controller;
 import com.sparta.stockhub.dto.requestDto.ArticleRequestDto;
 import com.sparta.stockhub.dto.responseDto.ArticleListResponseDto;
 import com.sparta.stockhub.dto.responseDto.ArticleResponseDto;
+import com.sparta.stockhub.exceptionHandler.CustomException;
+import com.sparta.stockhub.exceptionHandler.ErrorCode;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import com.sparta.stockhub.service.ArticleService;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +77,7 @@ public class ArticleController {
     @GetMapping("/user/my/articles")
     public List<ArticleListResponseDto> readMyArticles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails != null) return articleService.readUserArticles(userDetails.getUser().getUserId());
-        else throw new IllegalArgumentException("로그인이 필요합니다.");
+        else throw new CustomException(ErrorCode.UNAUTHORIZED_LOGIN);
     }
 
     // 게시글: 게시글 내용 조회
