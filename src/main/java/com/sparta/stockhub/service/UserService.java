@@ -26,7 +26,10 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +39,7 @@ public class UserService {
 
 
     // 카카오 로그인
-    public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException, UnsupportedEncodingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
         // 2. "액세스 토큰"으로 카카오 로그인 정보 호출
@@ -57,6 +60,7 @@ public class UserService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", "12c4e96969c4b50ad263268577cdcb76");
         body.add("redirect_uri", "http://stockhub.co.kr.s3-website.ap-northeast-2.amazonaws.com/user/kakao/callback");
+//        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청
@@ -113,7 +117,7 @@ public class UserService {
     }
 
     // 3. JWT 형식의 토큰 생성
-    private void createJwt(User user, HttpServletResponse response) {
+    private void createJwt(User user, HttpServletResponse response) throws UnsupportedEncodingException {
 
         UserDetails userDetails = new UserDetailsImpl(user);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -122,11 +126,14 @@ public class UserService {
         UserDetailsImpl userDetailsJwt = ((UserDetailsImpl) authentication.getPrincipal());
         String token = JwtTokenUtils.generateJwtToken(userDetailsJwt);
 
+        String nicknameEncoded = URLEncoder.encode(user.getNickname(), "utf-8");
+        String rankEncoded = URLEncoder.encode(user.getRank(), "utf-8");
+
         response.addHeader("Authorization", "BEARER " + token);
         response.addHeader("userId", String.valueOf(user.getUserId()));
-        response.addHeader("nickname", user.getNickname());
         response.addHeader("profileImage", user.getProfileImage());
-        response.addHeader("rank", user.getRank());
+        response.addHeader("nickname", nicknameEncoded);
+        response.addHeader("rank", rankEncoded);
         response.addHeader("experience", String.valueOf(user.getExperience()));
     }
 
@@ -154,9 +161,9 @@ public class UserService {
     @Transactional
     public void changeNickname(User user, String newNickname) {
 
-//        String pattern = "^(?=.*[a-zA-Z0-9가-힣])[a-zA-Z0-9가-힣]{2,12}$"; // 유효성 검사: 영문, 한글, 숫자 조합하여 2~12자리
-//        boolean regex = Pattern.matches(pattern, newNickname);
-//        if (regex == false) throw new CustomException(ErrorCode.NOT_ACCEPTABLE_NICKNAME);
+        String pattern = "^(?=.*[a-zA-Z0-9가-힣])[a-zA-Z0-9가-힣]{2,12}$"; // 유효성 검사: 영문, 한글, 숫자 조합하여 2~12자리
+        boolean regex = Pattern.matches(pattern, newNickname);
+        if (regex == false) throw new CustomException(ErrorCode.NOT_ACCEPTABLE_NICKNAME);
 
         String[] curseWords = { // 욕설 검사
                 "개걸레", "개보지", "개씨발", "개좆", "개지랄", "걸레년",
