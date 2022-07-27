@@ -28,8 +28,10 @@ public class ArticleService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final StockService stockService;
+    private final UserService userService;
 
     // 게시글 작성
+    @Transactional
     public void createArticle(UserDetailsImpl userDetails, ArticleRequestDto requestDto) {
         Long userId = userDetails.getUser().getUserId();
         String articleTitle = requestDto.getArticleTitle();
@@ -67,6 +69,10 @@ public class ArticleService {
         stockService.registerStock(stockName);
 
         articleRepository.save(article);
+
+        User user = userDetails.getUser(); // 경험치 30점 획득
+        user.setExperience(user.getExperience() + 30);
+        userService.updateRank(user);
     }
 
     // 게시글 검색
@@ -259,23 +265,7 @@ public class ArticleService {
         return responseDtoList;
     }
 
-    // 게시글: 게시글 내용 조회 (로그인 사용자) //////////////////// 수정 필요
-    @Transactional
-    public ArticleResponseDto readArticleLoggedIn(User loginUser, Long articleId) {
-        Article article = articleRepository.findByArticleId(articleId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_ARTICLE)
-        );
-        User user = userRepository.findById(article.getUserId()).orElseThrow(
-                () -> new NullPointerException("유저가 존재하지 않습니다.")
-        );
-        article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
-        int commentCount = countComment(article);
-        int voteSign = checkVoteSign(loginUser, article);
-        ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount, voteSign);
-        return responseDto;
-    }
-
-    // 게시글: 게시글 내용 조회 (비로그인 사용자) //////////////////// 수정 필요
+    // 게시글: 게시글 내용 조회
     @Transactional
     public ArticleResponseDto readArticle(Long articleId) {
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
@@ -286,9 +276,16 @@ public class ArticleService {
         );
         article.setViewCount(article.getViewCount() + 1); // 게시글 내용 조회 시 조회수 1 증가
         int commentCount = countComment(article);
-        int voteSign = 0;
-        ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount, voteSign);
+        ArticleResponseDto responseDto = new ArticleResponseDto(article, user, commentCount);
         return responseDto;
+    }
+
+    // 게시글: 로그인 사용자 투표 검사
+    public int checkVoteSign(User user, Long articleId) {
+        if (voteUpRepository.findByUserIdAndArticleId(user.getUserId(), articleId).isPresent()) return 1;
+        else if (voteDownRepository.findByUserIdAndArticleId(user.getUserId(), articleId).isPresent())
+            return -1;
+        else return 0;
     }
 
     // 게시글: 찬성 투표
@@ -315,6 +312,7 @@ public class ArticleService {
                 voteUpRepository.save(myVote);
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
                 checkPopularList(article);
+
             }
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEUP); // 이미 찬성을 한 경우
@@ -370,6 +368,10 @@ public class ArticleService {
 
         List<Comment> commentList = commentRepository.findAllByArticleId(articleId); // 해당 게시글 댓글 삭제
         for (int i = 0; i < commentList.size(); i++) commentRepository.delete(commentList.get(i));
+
+        User user = userDetails.getUser(); // 경험치 30점 감소
+        user.setExperience(user.getExperience() - 30);
+        userService.updateRank(user);
     }
 
     // 게시글 찬성 표 집계
@@ -393,21 +395,35 @@ public class ArticleService {
         return commentCount;
     }
 
-    // 게시글 찬성/반대 투표 검사
-    public int checkVoteSign(User user, Article article) {
-        if (voteUpRepository.findByUserIdAndArticleId(user.getUserId(), article.getArticleId()).isPresent()) return 1;
-        else if (voteDownRepository.findByUserIdAndArticleId(user.getUserId(), article.getArticleId()).isPresent())
-            return -1;
-        else return 0;
-    }
-
     // 인기글 등록/해제 검사
     @Transactional
     public void checkPopularList(Article article) {
-        if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0) article.setPopularList(true);
+
+        long userId = article.getUserId();
+        boolean preCheck = article.isPopularList();
+
+        if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0)
+            article.setPopularList(true);
         else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2)
             article.setPopularList(true);
         else article.setPopularList(false);
+
+        boolean postCheck = article.isPopularList();
+
+        if (preCheck == false && postCheck == true) { // 경험치 50점 획득
+            User user = userRepository.findById(userId).orElseThrow(
+                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+            );
+            user.setExperience(user.getExperience() + 50);
+            userService.updateRank(user);
+        }
+        if (preCheck == true && postCheck == false) { // 경험치 50점 감소
+            User user = userRepository.findById(userId).orElseThrow(
+                    () -> new NullPointerException("유저가 존재하지 않습니다.")
+            );
+            user.setExperience(user.getExperience() - 50);
+            userService.updateRank(user);
+        }
     }
 
     // 게시글 등록 종목 현재가 및 수익률 업데이트 //////////////////// 스케쥴러 연동 완료

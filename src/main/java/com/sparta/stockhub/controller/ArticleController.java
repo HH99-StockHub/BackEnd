@@ -80,9 +80,15 @@ public class ArticleController {
 
     // 게시글: 게시글 내용 조회
     @GetMapping("/articles/{articleId}")
-    public ArticleResponseDto readArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId) {
-        if (userDetails != null) return articleService.readArticleLoggedIn(userDetails.getUser(), articleId);
-        else return articleService.readArticle(articleId);
+    public ArticleResponseDto readArticle(@PathVariable Long articleId) {
+        return articleService.readArticle(articleId);
+    }
+
+    // 게시글: 로그인 사용자 투표 검사
+    @PostMapping("/articles/{articleId}/voteSign")
+    public int checkVoteSign(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId) {
+        if (userDetails != null) return articleService.checkVoteSign(userDetails.getUser(), articleId);
+        else return 0;
     }
 
     // 게시글: 찬성 투표

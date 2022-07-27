@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.stockhub.domain.User;
+import com.sparta.stockhub.repository.ArticleRepository;
 import com.sparta.stockhub.repository.UserRepository;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import com.sparta.stockhub.security.jwt.JwtTokenUtils;
@@ -22,7 +23,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
+import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -122,7 +127,43 @@ public class UserService {
 
         response.addHeader("Authorization", "BEARER " + token);
         response.addHeader("userId", String.valueOf(user.getUserId()));
+        response.addHeader("nickname", user.getNickname());
         response.addHeader("profileImage", user.getProfileImage());
+        response.addHeader("rank", user.getRank());
+        response.addHeader("experience", String.valueOf(user.getExperience()));
+    }
+
+    // 유저 랭크 업데이트
+    @Transactional
+    public void updateRank(User user) {
+
+        int exp = user.getExperience();
+        if (exp < 10) user.setRank("신입");
+        else if (exp < 100) user.setRank("초보");
+        else if (exp < 200) user.setRank("중수");
+        else if (exp < 500) user.setRank("고수");
+        else user.setRank("지존");
+    }
+
+    // 유저: 닉네임 변경
+    @Transactional
+    public void changeNickname(User user, String newNickname) {
+
+        Pattern pattern = Pattern.compile("^(?=.*[a-zA-Z0-9가-힣])[a-zA-Z0-9가-힣]{2,12}$"); // 유효성 검사: 영문, 한글, 숫자 조합하여 2~12자리
+        Matcher matcher = pattern.matcher(newNickname);
+        if (!matcher.find()) throw new IllegalArgumentException("유효하지 않은 닉네임입니다.");
+
+        String[] curseWords = { // 욕설 검사
+                "개걸레", "개보지", "개씨발", "개좆", "개지랄", "걸레년",
+                "느검마", "느금", "니기미", "니애미", "니애비", "닝기미",
+                "미친년", "미친놈", "미친새끼", "백보지", "보지털", "보짓물", "빠구리",
+                "썅년", "썅놈", "씨발", "씹년", "씹보지", "씹새끼", "씹자지", "씹창",
+                "잠지털", "잡년", "잡놈", "젓같은", "젖같은", "좆", "창녀", "창년"
+        };
+        for (String curseWord : curseWords)
+            if (newNickname.contains(curseWord)) throw new IllegalArgumentException("욕설을 포함할 수 없습니다.");
+
+        user.setNickname(newNickname);
     }
 
     // 채팅방에서 유저 검색 / 주희 주가

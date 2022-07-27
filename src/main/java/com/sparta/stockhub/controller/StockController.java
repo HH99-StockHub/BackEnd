@@ -1,6 +1,7 @@
 package com.sparta.stockhub.controller;
 
 import com.sparta.stockhub.domain.Stock;
+import com.sparta.stockhub.dto.responseDto.StockResponseDto;
 import com.sparta.stockhub.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +22,15 @@ public class StockController {
         return stockService.getStocks();
     }
 
-    // 주식: 저장된 현재가 조회
+    // 주식: 종목 현재가 조회
     @GetMapping("/stock/price/{stockName}")
     public int getStockPrice(@PathVariable String stockName) {
         return stockService.getStockPrice(stockName);
+    }
+
+    // 주식: 종목 상세정보 조회
+    @GetMapping("/stock/details/{stockName}")
+    public StockResponseDto getStockDetails(@PathVariable String stockName) {
+            return stockService.getStockDetails(stockName);
     }
 }

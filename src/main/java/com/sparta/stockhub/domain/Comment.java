@@ -25,7 +25,6 @@ public class Comment extends Timestamped {
     @Column(nullable = false)
     private String comments;
 
-
     public Comment(Long userId, Long articleId, String comments) {
         this.userId = userId;
         this.articleId = articleId;

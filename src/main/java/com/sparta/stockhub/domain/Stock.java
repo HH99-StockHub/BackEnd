@@ -1,5 +1,6 @@
 package com.sparta.stockhub.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import javax.persistence.Id;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Stock {
 
     @Id
@@ -20,14 +22,21 @@ public class Stock {
 
     private String stockName;
 
-    private int stockPrice;
-
     private boolean registered;
 
-    public Stock(String stockCode, String stockName, int stockPrice, boolean registered) {
-        this.stockCode = stockCode;
-        this.stockName = stockName;
-        this.stockPrice = stockPrice;
-        this.registered = registered;
-    }
+    private int stockPrice;
+
+    private int increment;
+
+    private float incrementRate;
+
+    private int lastPrice;
+
+    private int startPrice;
+
+    private int highPrice;
+
+    private int lowPrice;
+
+    private int tradeVolume;
 }
