@@ -26,9 +26,9 @@ public class Stock {
 
     private int stockPrice;
 
-    private int increment;
+    private int change;
 
-    private float incrementRate;
+    private float changeRate;
 
     private int lastPrice;
 

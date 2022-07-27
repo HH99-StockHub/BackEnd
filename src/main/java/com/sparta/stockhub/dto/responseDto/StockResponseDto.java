@@ -10,9 +10,9 @@ public class StockResponseDto {
 
     private int stockPrice;
 
-    private int increment;
+    private int change;
 
-    private float incrementRate;
+    private float changeRate;
 
     private int lastPrice;
 
@@ -27,8 +27,8 @@ public class StockResponseDto {
     public StockResponseDto(Stock stock) {
         this.stockName = stock.getStockName();
         this.stockPrice = stock.getStockPrice();
-        this.increment = stock.getIncrement();
-        this.incrementRate = stock.getIncrementRate();
+        this.change = stock.getChange();
+        this.changeRate = stock.getChangeRate();
         this.lastPrice = stock.getLastPrice();
         this.startPrice = stock.getStartPrice();
         this.highPrice = stock.getHighPrice();
