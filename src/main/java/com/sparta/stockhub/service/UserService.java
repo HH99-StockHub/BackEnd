@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.stockhub.domain.User;
 import com.sparta.stockhub.dto.responseDto.UserResponseDto;
-import com.sparta.stockhub.repository.ArticleRepository;
+import com.sparta.stockhub.exceptionHandler.CustomException;
+import com.sparta.stockhub.exceptionHandler.ErrorCode;
 import com.sparta.stockhub.repository.UserRepository;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import com.sparta.stockhub.security.jwt.JwtTokenUtils;
@@ -25,7 +26,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -158,7 +158,7 @@ public class UserService {
 
         Pattern pattern = Pattern.compile("^(?=.*[a-zA-Z0-9가-힣])[a-zA-Z0-9가-힣]{2,12}$"); // 유효성 검사: 영문, 한글, 숫자 조합하여 2~12자리
         Matcher matcher = pattern.matcher(newNickname);
-        if (!matcher.find()) throw new IllegalArgumentException("유효하지 않은 닉네임입니다.");
+        if (!matcher.find()) throw new CustomException(ErrorCode.NOT_ACCEPTABLE_NICKNAME);
 
         String[] curseWords = { // 욕설 검사
                 "개걸레", "개보지", "개씨발", "개좆", "개지랄", "걸레년",
@@ -168,7 +168,7 @@ public class UserService {
                 "잠지털", "잡년", "잡놈", "젓같은", "젖같은", "좆", "창녀", "창년"
         };
         for (String curseWord : curseWords)
-            if (newNickname.contains(curseWord)) throw new IllegalArgumentException("욕설을 포함할 수 없습니다.");
+            if (newNickname.contains(curseWord)) throw new CustomException(ErrorCode.NOT_ACCEPTABLE_CURSEWORDS);
 
         user.setNickname(newNickname);
     }
