@@ -34,6 +34,7 @@ public final class JwtTokenUtils {
             System.out.println(e.getMessage());
         }
 
+        System.out.println(token); // 주희 임시 추가
         return token;
     }
 
