@@ -26,6 +26,8 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 @Service
@@ -36,7 +38,7 @@ public class UserService {
 
 
     // 카카오 로그인
-    public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException, UnsupportedEncodingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
         // 2. "액세스 토큰"으로 카카오 로그인 정보 호출
@@ -114,7 +116,7 @@ public class UserService {
     }
 
     // 3. JWT 형식의 토큰 생성
-    private void createJwt(User user, HttpServletResponse response) {
+    private void createJwt(User user, HttpServletResponse response) throws UnsupportedEncodingException {
 
         UserDetails userDetails = new UserDetailsImpl(user);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -123,11 +125,15 @@ public class UserService {
         UserDetailsImpl userDetailsJwt = ((UserDetailsImpl) authentication.getPrincipal());
         String token = JwtTokenUtils.generateJwtToken(userDetailsJwt);
 
-        response.setContentType("text/html; charset=UTF-8");
-        response.setCharacterEncoding("utf-8");
+        String nicknameEncoded = URLEncoder.encode(user.getNickname(), "utf-8");
+        String rankEncoded = URLEncoder.encode(user.getRank(), "utf-8");
+
         response.addHeader("Authorization", "BEARER " + token);
         response.addHeader("userId", String.valueOf(user.getUserId()));
         response.addHeader("profileImage", user.getProfileImage());
+        response.addHeader("nickname", nicknameEncoded);
+        response.addHeader("rank", rankEncoded);
+        response.addHeader("experience", String.valueOf(user.getExperience()));
     }
 
     // 유저 랭크 업데이트
