@@ -19,10 +19,8 @@ public class RedisSubscriber { // 2차
             // ChatMessage 객채로 맵핑
             ChatMessage roomMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
             // Websocket 구독자에게 채팅 메시지 Send
-            System.out.println(roomMessage.getNickName());
             messagingTemplate.convertAndSend("/sub/topic/stockhub", roomMessage);
             System.out.println(roomMessage.getNickName());
-            System.out.println(roomMessage);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
