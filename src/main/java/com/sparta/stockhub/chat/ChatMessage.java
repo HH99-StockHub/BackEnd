@@ -13,7 +13,7 @@ public class ChatMessage implements Serializable{
         private static final long serialVersionUID = -1446398935944895849L;
 
     public enum MessageType { //메세지 타입 /참여, 채팅
-        ENTER, TALK, ALARM
+        ENTER, TALK, ALARM, RANK
     }
     private MessageType type; //
     private String sendTime; //
@@ -21,6 +21,7 @@ public class ChatMessage implements Serializable{
     private Long userId;
     private String message; //
     private String imageUrl; //
+    private String rank;
     private boolean clear;
 
     public ChatMessage(MessageType type, Long userId) {
