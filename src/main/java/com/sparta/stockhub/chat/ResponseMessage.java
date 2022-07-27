@@ -9,15 +9,15 @@ import java.time.LocalDateTime;
 public class ResponseMessage {
     private String noticeMessage;
 
-    private Long articleId;
+    private Long NoticeArticleId;
 
     private Long noticeId;
 
     private LocalDateTime noticeCreatedAt;
 
-    public ResponseMessage(String noticeMessage, Long articleId, Long noticeId, LocalDateTime noticeCreatedAt) {
+    public ResponseMessage(String noticeMessage, Long NoticeArticleId, Long noticeId, LocalDateTime noticeCreatedAt) {
         this.noticeMessage = noticeMessage;
-        this.articleId = articleId;
+        this.NoticeArticleId = NoticeArticleId;
         this.noticeId = noticeId;
         this.noticeCreatedAt = noticeCreatedAt;
     }

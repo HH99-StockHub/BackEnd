@@ -21,7 +21,7 @@ public class NotificationService {
 
     public void sendPrivateNotificationComment(String userNickname, Long articleUserId, Long articleId, Long commentUserId) {
 
-       if(articleId != commentUserId) {
+       if(!articleId.equals(commentUserId)) {
            Long userId = articleUserId;
            String message = userNickname + " 님이 회원님의 게시글에 댓글을 달았습니다.";
            boolean check = false;
@@ -31,8 +31,9 @@ public class NotificationService {
            Notice notice = noticeRepository.findNoticeByNoticeCode(noticeCode);
            Long noticeId = notice.getNoticeId();
            LocalDateTime noticeCreatedAt = notice.getCreatedAt();
+           Long noticeArticleId = articleId;
 
-           ResponseMessage responseMessage = new ResponseMessage(userNickname + " 님이 회원님의 게시글에 댓글을 달았습니다.", articleId, noticeId, noticeCreatedAt);
+           ResponseMessage responseMessage = new ResponseMessage(userNickname + " 님이 회원님의 게시글에 댓글을 달았습니다.", noticeArticleId, noticeId, noticeCreatedAt);
 
            messagingTemplate.convertAndSend("/sub/topic/stockhub/" + articleUserId, responseMessage);
        }
