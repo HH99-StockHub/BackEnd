@@ -1,5 +1,6 @@
 package com.sparta.stockhub.service;
 
+import com.sparta.stockhub.chat.NotificationService;
 import com.sparta.stockhub.domain.*;
 import com.sparta.stockhub.dto.requestDto.ArticleRequestDto;
 import com.sparta.stockhub.dto.responseDto.ArticleListResponseDto;
@@ -13,6 +14,10 @@ import com.sparta.stockhub.repository.*;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,6 +35,8 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final StockService stockService;
     private final UserService userService;
+
+    private final NotificationService notificationService;
 
     // 게시글 작성
     @Transactional
@@ -86,7 +93,7 @@ public class ArticleService {
     }
 
     // 게시글 검색
-    public List<ArticleListResponseDto> searchArticle(String keywords) {
+    public Page<ArticleListResponseDto> searchArticle(String keywords, int page, int size) {
         String keywordsTrimmed = keywords.trim();
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
 
@@ -141,7 +148,13 @@ public class ArticleService {
             }
         }
 
-        return responseDtoList;
+        Pageable pageable = PageRequest.of(page, size);
+
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
+        final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
+
+        return resultpage;
     }
 
     // 메인: 전체 게시글 목록 조회
@@ -149,7 +162,7 @@ public class ArticleService {
         List<Article> articleList = articleRepository.findAllByOrderByCreatedAtDesc();
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
-            if (i == 10) break; // 메인 페이지에 내릴 때는 최신 게시글 10개만 반환
+            if (i == 9) break; // 메인 페이지에 내릴 때는 최신 게시글 9개만 반환
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
                     () -> new NullPointerException("유저가 존재하지 않습니다.")
             );
@@ -219,8 +232,8 @@ public class ArticleService {
         return responseDtoList;
     }
 
-    // 전체 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
-    public List<ArticleListResponseDto> readAllArticles() {
+    // 전체 게시판: 게시글 목록 조회
+    public Page<ArticleListResponseDto> readAllArticles(int page, int size) {
         List<Article> articleList = articleRepository.findAllByOrderByCreatedAtDesc();
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
@@ -230,11 +243,16 @@ public class ArticleService {
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
         }
-        return responseDtoList;
+        Pageable pageable = PageRequest.of(page, size);
+
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
+        final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
+        return resultpage;
     }
 
-    // 인기글 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
-    public List<ArticleListResponseDto> readPopularArticles() {
+    // 인기글 게시판: 게시글 목록 조회
+    public Page<ArticleListResponseDto> readPopularArticles(int page, int size) {
         List<Article> articleList = articleRepository.findAllByPopularListOrderByPopularRegTimeDesc(true);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
@@ -244,11 +262,18 @@ public class ArticleService {
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
         }
-        return responseDtoList;
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
+        final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
+
+        return resultpage;
     }
 
-    // 수익왕 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
-    public List<ArticleListResponseDto> readRichArticles() {
+    // 수익왕 게시판: 게시글 목록 조회
+    public Page<ArticleListResponseDto> readRichArticles(int page, int size) {
         List<Article> articleList = articleRepository.findAllByRichListOrderByRichRegTimeDesc(true);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
@@ -258,11 +283,17 @@ public class ArticleService {
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
         }
-        return responseDtoList;
+        Pageable pageable = PageRequest.of(page, size);
+
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
+        final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
+
+        return resultpage;
     }
 
-    // 모아보기 게시판: 게시글 목록 조회 //////////////////// 페이지네이션 적용 필요
-    public List<ArticleListResponseDto> readUserArticles(Long userId) {
+    // 모아보기 게시판: 게시글 목록 조회
+    public Page<ArticleListResponseDto> readUserArticles(Long userId, int page, int size) {
         List<Article> articleList = articleRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
@@ -272,7 +303,13 @@ public class ArticleService {
             int commentCount = countComment(articleList.get(i));
             responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
         }
-        return responseDtoList;
+        Pageable pageable = PageRequest.of(page, size);
+
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
+        final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
+
+        return resultpage;
     }
 
     // 게시글: 게시글 내용 조회
@@ -301,7 +338,9 @@ public class ArticleService {
     // 게시글: 찬성 투표
     @Transactional
     public void voteUp(UserDetailsImpl userDetails, Long articleId) {
+
         Long loginId = userDetails.getUser().getUserId();
+        String loginNickname = userDetails.getUser().getNickname();
         VoteUp oldVote = voteUpRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 찬성 투표를 했는지 여부 확인
         VoteDown oppositeVote = voteDownRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 반대 투표를 했는지 여부 확인
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
@@ -316,13 +355,12 @@ public class ArticleService {
                 voteDownRepository.delete(oppositeVote);
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
                 article.setVoteDownCount(article.getVoteDownCount() - 1);
-                checkPopularList(article);
+                checkPopularList(article, loginNickname);
             } else {
                 VoteUp myVote = new VoteUp(articleId, loginId); // 해당 게시글에 투표를 처음 하는 경우
                 voteUpRepository.save(myVote);
                 article.setVoteUpCount(article.getVoteUpCount() + 1);
-                checkPopularList(article);
-
+                checkPopularList(article, loginNickname);
             }
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEUP); // 이미 찬성을 한 경우
@@ -332,7 +370,9 @@ public class ArticleService {
     // 게시글: 반대 투표
     @Transactional
     public void voteDown(UserDetailsImpl userDetails, Long articleId) {
+
         Long loginId = userDetails.getUser().getUserId();
+        String loginNickname = userDetails.getUser().getNickname();
         VoteDown oldVote = voteDownRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 반대 투표를 했는지 여부 확인
         VoteUp oppositeVote = voteUpRepository.findByUserIdAndArticleId(loginId, articleId).orElse(null); // 해당 게시글에 찬성 투표를 했는지 여부 확인
         Article article = articleRepository.findByArticleId(articleId).orElseThrow(
@@ -347,12 +387,12 @@ public class ArticleService {
                 voteUpRepository.delete(oppositeVote);
                 article.setVoteDownCount(article.getVoteDownCount() + 1);
                 article.setVoteUpCount(article.getVoteUpCount() - 1);
-                checkPopularList(article);
+                checkPopularList(article, loginNickname);
             } else {
                 VoteDown myVote = new VoteDown(articleId, loginId); // 해당 게시글에 투표를 처음 하는 경우
                 voteDownRepository.save(myVote);
                 article.setVoteDownCount(article.getVoteDownCount() + 1);
-                checkPopularList(article);
+                checkPopularList(article, loginNickname);
             }
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEDOWN); // 이미 반대를 한 경우
@@ -407,15 +447,14 @@ public class ArticleService {
 
     // 인기글 등록/해제 검사
     @Transactional
-    public void checkPopularList(Article article) {
+    public void checkPopularList(Article article, String loginNickname) {
 
         long userId = article.getUserId();
         boolean preCheck = article.isPopularList();
 
         if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0)
             article.setPopularList(true);
-        else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2)
-            article.setPopularList(true);
+        else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2) article.setPopularList(true);
         else article.setPopularList(false);
 
         boolean postCheck = article.isPopularList();
@@ -427,6 +466,11 @@ public class ArticleService {
             user.setExperience(user.getExperience() + 50);
             userService.updateRank(user);
             article.setPopularRegTime(LocalDateTime.now());
+
+            Long articleUserId = article.getUserId();
+            String userNickname = loginNickname;
+
+            notificationService.sendPrivateNotificationLike(userNickname, articleUserId, article.getArticleId());
         }
         if (preCheck == true && postCheck == false) { // 경험치 50점 감소
             User user = userRepository.findById(userId).orElseThrow(
@@ -457,7 +501,14 @@ public class ArticleService {
             if (articleList.get(i).getStockReturn() >= 5) articleList.get(i).setRichList(true);
             else articleList.get(i).setRichList(false);
             boolean postCheck = articleList.get(i).isRichList();
-            if (preCheck == false && postCheck == true) articleList.get(i).setRichRegTime(LocalDateTime.now());
+            if (preCheck == false && postCheck == true) {
+                articleList.get(i).setRichRegTime(LocalDateTime.now());
+
+                String articleTitle = articleList.get(i).getArticleTitle();
+                Long articleUserId = articleList.get(i).getUserId();
+                Long articleId = articleList.get(i).getArticleId();
+                notificationService.sendPrivateNotificationRich(articleTitle, articleUserId, articleId);
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+
 package com.sparta.stockhub.controller;
 
 import com.sparta.stockhub.dto.requestDto.ArticleRequestDto;
@@ -6,6 +7,7 @@ import com.sparta.stockhub.dto.responseDto.ArticleResponseDto;
 import com.sparta.stockhub.security.UserDetailsImpl;
 import com.sparta.stockhub.service.ArticleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +31,14 @@ public class ArticleController {
 
     // 게시글 검색
     @GetMapping("/articles/{keywords}/search")
-    public List<ArticleListResponseDto> searchArticle(@PathVariable String keywords) {
-        return articleService.searchArticle(keywords);
+    public Page<ArticleListResponseDto> searchArticle(
+            @PathVariable String keywords,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size
+
+    ) {
+        page = page - 1;
+        return articleService.searchArticle(keywords, page, size);
     }
 
     // 메인: 전체 게시글 목록 조회
@@ -57,24 +65,44 @@ public class ArticleController {
 
     // 전체 게시판: 게시글 목록 조회
     @GetMapping("/all/articles")
-    public List<ArticleListResponseDto> readAllArticles() { return articleService.readAllArticles(); }
+    public Page<ArticleListResponseDto> readAllArticles(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size
+    ) { page = page - 1;
+        return articleService.readAllArticles(page, size); }
 
     // 인기글 게시판: 게시글 목록 조회
     @GetMapping("/popular/articles")
-    public List<ArticleListResponseDto> readPopularArticles() { return articleService.readPopularArticles(); }
+    public Page<ArticleListResponseDto> readPopularArticles(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size
+    ) { page = page - 1;
+        return articleService.readPopularArticles(page, size); }
 
     // 수익왕 게시판: 게시글 목록 조회
     @GetMapping("/rich/articles")
-    public List<ArticleListResponseDto> readRichArticles() { return articleService.readRichArticles(); }
+    public Page<ArticleListResponseDto> readRichArticles(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size
+    ) { page = page - 1;
+        return articleService.readRichArticles(page, size); }
 
     // 모아보기 게시판: 게시글 목록 조회
     @GetMapping("/user/{userId}/articles")
-    public List<ArticleListResponseDto> readUserArticles(@PathVariable Long userId) { return articleService.readUserArticles(userId);}
+    public Page<ArticleListResponseDto> readUserArticles(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @PathVariable Long userId) {
+        page = page - 1;
+        return articleService.readUserArticles(userId, page, size);}
 
     // 모아보기 게시판: 내 게시글 목록 조회
     @GetMapping("/user/my/articles")
-    public List<ArticleListResponseDto> readMyArticles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if (userDetails != null) return articleService.readUserArticles(userDetails.getUser().getUserId());
+    public Page<ArticleListResponseDto> readMyArticles(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails != null){ page = page - 1; return articleService.readUserArticles(userDetails.getUser().getUserId(), page, size);}
         else throw new IllegalArgumentException("로그인이 필요합니다.");
     }
 
@@ -113,3 +141,4 @@ public class ArticleController {
         articleService.deleteArticle(userDetails, articleId);
     }
 }
+
