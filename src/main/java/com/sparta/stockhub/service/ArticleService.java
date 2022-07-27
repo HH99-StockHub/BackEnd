@@ -73,13 +73,13 @@ public class ArticleService {
 
         LocalDateTime deadline = LocalDateTime.now(); // 수익률 추적 데드라인 세팅
         String timeLimit = requestDto.getTimeLimit();
-        if (timeLimit == "2주") deadline.plusWeeks(2);
-        else if (timeLimit == "1개월") deadline.plusMonths(1);
-        else if (timeLimit == "3개월") deadline.plusMonths(3);
-        else if (timeLimit == "6개월") deadline.plusMonths(6);
-        else if (timeLimit == "1년") deadline.plusYears(1);
-        else if (timeLimit == "2년") deadline.plusYears(2);
-        else if (timeLimit == "3년") deadline.plusYears(3);
+        if (timeLimit.equals("2주")) deadline = deadline.plusWeeks(2);
+        else if (timeLimit.equals("1개월")) deadline = deadline.plusMonths(1);
+        else if (timeLimit.equals("3개월")) deadline = deadline.plusMonths(3);
+        else if (timeLimit.equals("6개월")) deadline = deadline.plusMonths(6);
+        else if (timeLimit.equals("1년")) deadline = deadline.plusYears(1);
+        else if (timeLimit.equals("2년")) deadline = deadline.plusYears(2);
+        else if (timeLimit.equals("3년")) deadline = deadline.plusYears(3);
 
         Article article = new Article(userId, requestDto, deadline, stockPriceFirst, stockPriceLast, stockReturn);
 
@@ -89,6 +89,7 @@ public class ArticleService {
 
         User user = userDetails.getUser(); // 경험치 30점 획득
         user.setExperience(user.getExperience() + 30);
+        userRepository.save(user);
         userService.updateRank(user);
     }
 
@@ -150,7 +151,7 @@ public class ArticleService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        final int start = (int)pageable.getOffset();
+        final int start = (int) pageable.getOffset();
         final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
         final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
 
@@ -245,7 +246,7 @@ public class ArticleService {
         }
         Pageable pageable = PageRequest.of(page, size);
 
-        final int start = (int)pageable.getOffset();
+        final int start = (int) pageable.getOffset();
         final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
         final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
         return resultpage;
@@ -265,7 +266,7 @@ public class ArticleService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        final int start = (int)pageable.getOffset();
+        final int start = (int) pageable.getOffset();
         final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
         final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
 
@@ -285,7 +286,7 @@ public class ArticleService {
         }
         Pageable pageable = PageRequest.of(page, size);
 
-        final int start = (int)pageable.getOffset();
+        final int start = (int) pageable.getOffset();
         final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
         final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
 
@@ -305,7 +306,7 @@ public class ArticleService {
         }
         Pageable pageable = PageRequest.of(page, size);
 
-        final int start = (int)pageable.getOffset();
+        final int start = (int) pageable.getOffset();
         final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
         final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
 
@@ -421,6 +422,7 @@ public class ArticleService {
 
         User user = userDetails.getUser(); // 경험치 30점 감소
         user.setExperience(user.getExperience() - 30);
+        userRepository.save(user);
         userService.updateRank(user);
     }
 
@@ -454,7 +456,8 @@ public class ArticleService {
 
         if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0)
             article.setPopularList(true);
-        else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2) article.setPopularList(true);
+        else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2)
+            article.setPopularList(true);
         else article.setPopularList(false);
 
         boolean postCheck = article.isPopularList();

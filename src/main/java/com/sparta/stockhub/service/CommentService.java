@@ -56,6 +56,7 @@ public class CommentService {
 
         User user = userDetails.getUser(); // 경험치 5점 획득
         user.setExperience(user.getExperience() + 5);
+        userRepository.save(user);
         userService.updateRank(user);
     }
 
@@ -72,6 +73,7 @@ public class CommentService {
 
         User user = userDetails.getUser(); // 경험치 5점 감소
         user.setExperience(user.getExperience() - 5);
+        userRepository.save(user);
         userService.updateRank(user);
     }
 

@@ -27,8 +27,6 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -142,6 +140,8 @@ public class UserService {
         else if (exp < 200) user.setRank("중수");
         else if (exp < 500) user.setRank("고수");
         else user.setRank("지존");
+
+        userRepository.save(user);
     }
 
     // 유저: 사용자 랭크 조회
@@ -154,9 +154,9 @@ public class UserService {
     @Transactional
     public void changeNickname(User user, String newNickname) {
 
-        Pattern pattern = Pattern.compile("^(?=.*[a-zA-Z0-9가-힣])[a-zA-Z0-9가-힣]{2,12}$"); // 유효성 검사: 영문, 한글, 숫자 조합하여 2~12자리
-        Matcher matcher = pattern.matcher(newNickname);
-        if (!matcher.find()) throw new CustomException(ErrorCode.NOT_ACCEPTABLE_NICKNAME);
+//        String pattern = "^(?=.*[a-zA-Z0-9가-힣])[a-zA-Z0-9가-힣]{2,12}$"; // 유효성 검사: 영문, 한글, 숫자 조합하여 2~12자리
+//        boolean regex = Pattern.matches(pattern, newNickname);
+//        if (regex == false) throw new CustomException(ErrorCode.NOT_ACCEPTABLE_NICKNAME);
 
         String[] curseWords = { // 욕설 검사
                 "개걸레", "개보지", "개씨발", "개좆", "개지랄", "걸레년",
@@ -169,5 +169,6 @@ public class UserService {
             if (newNickname.contains(curseWord)) throw new CustomException(ErrorCode.NOT_ACCEPTABLE_CURSEWORDS);
 
         user.setNickname(newNickname);
+        userRepository.save(user);
     }
 }
