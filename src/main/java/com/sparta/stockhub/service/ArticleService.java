@@ -507,10 +507,9 @@ public class ArticleService {
             if (preCheck == false && postCheck == true) {
                 articleList.get(i).setRichRegTime(LocalDateTime.now());
 
-                String articleTitle = articleList.get(i).getArticleTitle();
                 Long articleUserId = articleList.get(i).getUserId();
                 Long articleId = articleList.get(i).getArticleId();
-                notificationService.sendPrivateNotificationRich(articleTitle, articleUserId, articleId);
+                notificationService.sendPrivateNotificationRich(articleUserId, articleId);
             }
         }
     }

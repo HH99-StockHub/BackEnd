@@ -46,11 +46,11 @@ public class NotificationService {
 
 
 
-    public void sendPrivateNotificationVote(String articleTitle, Long articleUserId, Long articleId) {
+    public void sendPrivateNotificationVote(Long articleUserId, Long articleId) {
 
 
         Long userId = articleUserId;
-        String message = "회원님의 \"" + articleTitle + "\" 게시글이 BEST 인기글에 등록되었습니다.";
+        String message = "회원님의 게시글이 BEST 인기글에 등록되었습니다.";
         boolean check = false;
 
 
@@ -61,17 +61,17 @@ public class NotificationService {
         Long noticeId = notice.getNoticeId();
         LocalDateTime noticeCreatedAt = notice.getCreatedAt();
 
-        ResponseMessage responseMessage = new ResponseMessage("회원님의 \"" + articleTitle + "\" 게시글이 BEST 인기글에 등록되었습니다.", articleId, noticeId, noticeCreatedAt);
+        ResponseMessage responseMessage = new ResponseMessage("회원님의 게시글이 BEST 인기글에 등록되었습니다.", articleId, noticeId, noticeCreatedAt);
 
         messagingTemplate.convertAndSend("/sub/topic/stockhub/" + articleUserId, responseMessage);
 
     }
 
-    public void sendPrivateNotificationRich(String articleTitle, Long articleUserId, Long articleId) {
+    public void sendPrivateNotificationRich(Long articleUserId, Long articleId) {
 
 
         Long userId = articleUserId;
-        String message = "회원님의 \"" + articleTitle + "\" 게시글은 BEST 수익왕에 등록되었습니다.";
+        String message = "회원님의 게시글은 BEST 수익왕에 등록되었습니다.";
         boolean check = false;
 
 
@@ -82,13 +82,13 @@ public class NotificationService {
         Long noticeId = notice.getNoticeId();
         LocalDateTime noticeCreatedAt = notice.getCreatedAt();
 
-        ResponseMessage responseMessage = new ResponseMessage("회원님의 \"" + articleTitle + "\" 게시글은 BEST 수익왕에 등록되었습니다.", articleId, noticeId, noticeCreatedAt);
+        ResponseMessage responseMessage = new ResponseMessage("회원님의 게시글은 BEST 수익왕에 등록되었습니다.", articleId, noticeId, noticeCreatedAt);
 
         messagingTemplate.convertAndSend("/sub/topic/stockhub/" + articleUserId, responseMessage);
 
     }
 
-    public void sendPrivateNotificationLike(String userNickname,Long articleUserId, Long articleId) {
+    public void sendPrivateNotificationLike(String userNickname, Long articleUserId, Long articleId) {
 
         Long userId = articleUserId;
         String message = userNickname + " 님이 회원님의 게시글에 추천을 눌렀습니다";
