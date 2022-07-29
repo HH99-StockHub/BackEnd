@@ -70,13 +70,13 @@ public class Article extends Timestamped {
     int viewCount;
 
     @Column
-    boolean popularList; // 인기글 게시판 등록 여부
+    int popularList; // 인기글 게시판 등록 여부
 
     @Column
     LocalDateTime popularRegTime; // 인기글 게시판 등록 시간
 
     @Column
-    boolean richList; // 수익왕 게시판 등록 여부
+    int richList; // 수익왕 게시판 등록 여부
 
     @Column
     LocalDateTime richRegTime; // 수익왕 게시판 등록 시간
@@ -99,8 +99,8 @@ public class Article extends Timestamped {
         this.voteUpCount = 0;
         this.voteDownCount = 0;
         this.viewCount = 0;
-        this.popularList = false;
-        this.richList = false;
+        this.popularList = 0;
+        this.richList = 0;
         this.popularRegTime = null;
         this.richRegTime = null;
     }

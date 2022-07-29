@@ -24,8 +24,8 @@ public class ArticleListResponseDto {
     private int voteDownCount;
     private int commentCount;
     private int viewCount;
-    private boolean popularList;
-    private boolean richList;
+    private int popularList;
+    private int richList;
 
     public ArticleListResponseDto(Article article, User user, int commentCount) {
         this.articleId = article.getArticleId();
@@ -41,7 +41,7 @@ public class ArticleListResponseDto {
         this.voteDownCount = article.getVoteDownCount();
         this.commentCount = commentCount;
         this.viewCount = article.getViewCount();
-        this.popularList = article.isPopularList();
-        this.richList = article.isRichList();
+        this.popularList = article.getPopularList();
+        this.richList = article.getRichList();
     }
 }

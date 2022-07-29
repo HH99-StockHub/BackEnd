@@ -175,7 +175,7 @@ public class ArticleService {
 
     // 메인: 명예의 전당 인기글 목록 조회
     public List<ArticleListResponseDto> readMainFamePopularArticles() {
-        List<Article> articleList = articleRepository.findAllByPopularListOrderByVoteUpCountDesc(true);
+        List<Article> articleList = articleRepository.findAllByPopularListOrderByVoteUpCountDesc(1);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 3) break; // 명예의 전당은 인기도 상위 게시글 3개만 반환
@@ -190,7 +190,7 @@ public class ArticleService {
 
     // 메인: 명예의 전당 수익왕 목록 조회
     public List<ArticleListResponseDto> readMainFameRichArticles() {
-        List<Article> articleList = articleRepository.findAllByRichListOrderByStockReturnDesc(true);
+        List<Article> articleList = articleRepository.findAllByRichListOrderByStockReturnDesc(1);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 3) break; // 명예의 전당은 수익률 상위 게시글 3개만 반환
@@ -205,7 +205,7 @@ public class ArticleService {
 
     // 메인: 인기글 목록 조회
     public List<ArticleListResponseDto> readMainPopularArticles() {
-        List<Article> articleList = articleRepository.findAllByPopularListOrderByPopularRegTimeDesc(true);
+        List<Article> articleList = articleRepository.findAllByPopularListOrderByPopularRegTimeDesc(1);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 6) break; // 최신 인기글 6개만 반환
@@ -220,7 +220,7 @@ public class ArticleService {
 
     // 메인: 수익왕 목록 조회
     public List<ArticleListResponseDto> readMainRichArticles() {
-        List<Article> articleList = articleRepository.findAllByRichListOrderByRichRegTimeDesc(true);
+        List<Article> articleList = articleRepository.findAllByRichListOrderByRichRegTimeDesc(1);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             if (i == 6) break; // 최신 수익왕 6개만 반환
@@ -254,7 +254,7 @@ public class ArticleService {
 
     // 인기글 게시판: 게시글 목록 조회
     public Page<ArticleListResponseDto> readPopularArticles(int page, int size) {
-        List<Article> articleList = articleRepository.findAllByPopularListOrderByPopularRegTimeDesc(true);
+        List<Article> articleList = articleRepository.findAllByPopularListOrderByPopularRegTimeDesc(1);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
@@ -275,7 +275,7 @@ public class ArticleService {
 
     // 수익왕 게시판: 게시글 목록 조회
     public Page<ArticleListResponseDto> readRichArticles(int page, int size) {
-        List<Article> articleList = articleRepository.findAllByRichListOrderByRichRegTimeDesc(true);
+        List<Article> articleList = articleRepository.findAllByRichListOrderByRichRegTimeDesc(1);
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0; i < articleList.size(); i++) {
             User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
@@ -452,17 +452,17 @@ public class ArticleService {
     public void checkPopularList(Article article, String loginNickname) {
 
         long userId = article.getUserId();
-        boolean preCheck = article.isPopularList();
+        int preCheck = article.getPopularList();
 
         if (article.getVoteUpCount() >= 3 && article.getVoteDownCount() == 0)
-            article.setPopularList(true);
+            article.setPopularList(1);
         else if (article.getVoteUpCount() >= 3 && article.getVoteUpCount() / article.getVoteDownCount() >= 2)
-            article.setPopularList(true);
-        else article.setPopularList(false);
+            article.setPopularList(1);
+        else article.setPopularList(0);
 
-        boolean postCheck = article.isPopularList();
+        int postCheck = article.getPopularList();
 
-        if (preCheck == false && postCheck == true) { // 경험치 50점 획득
+        if (preCheck == 0 && postCheck == 1) { // 경험치 50점 획득
             User user = userRepository.findById(userId).orElseThrow(
                     () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
@@ -475,7 +475,7 @@ public class ArticleService {
 
             notificationService.sendPrivateNotificationLike(userNickname, articleUserId, article.getArticleId());
         }
-        if (preCheck == true && postCheck == false) { // 경험치 50점 감소
+        if (preCheck == 1 && postCheck == 0) { // 경험치 50점 감소
             User user = userRepository.findById(userId).orElseThrow(
                     () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
@@ -500,11 +500,11 @@ public class ArticleService {
 
         List<Article> articleList = articleRepository.findAll();
         for (int i = 0; i < articleList.size(); i++) {
-            boolean preCheck = articleList.get(i).isRichList();
-            if (articleList.get(i).getStockReturn() >= 5) articleList.get(i).setRichList(true);
-            else articleList.get(i).setRichList(false);
-            boolean postCheck = articleList.get(i).isRichList();
-            if (preCheck == false && postCheck == true) {
+            int preCheck = articleList.get(i).getRichList();
+            if (articleList.get(i).getStockReturn() >= 5) articleList.get(i).setRichList(1);
+            else articleList.get(i).setRichList(0);
+            int postCheck = articleList.get(i).getRichList();
+            if (preCheck == 0 && postCheck == 1) {
                 articleList.get(i).setRichRegTime(LocalDateTime.now());
 
                 Long articleUserId = articleList.get(i).getUserId();

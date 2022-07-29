@@ -13,13 +13,13 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     List<Article> findAllByOrderByCreatedAtDesc();
 
-    List<Article> findAllByPopularListOrderByVoteUpCountDesc(boolean popularList);
+    List<Article> findAllByPopularListOrderByVoteUpCountDesc(int popularList);
 
-    List<Article> findAllByRichListOrderByStockReturnDesc(boolean richList);
+    List<Article> findAllByRichListOrderByStockReturnDesc(int richList);
 
-    List<Article> findAllByPopularListOrderByPopularRegTimeDesc(boolean popularList);
+    List<Article> findAllByPopularListOrderByPopularRegTimeDesc(int popularList);
 
-    List<Article> findAllByRichListOrderByRichRegTimeDesc(boolean richList);
+    List<Article> findAllByRichListOrderByRichRegTimeDesc(int richList);
 
     List<Article> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 
