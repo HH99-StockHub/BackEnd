@@ -8,13 +8,13 @@ public class UserResponseDto {
 
     private String nickname;
     private String profileImage;
-    private String rank;
-    private int experience;
+    private String rankTitle;
+    private int expPoint;
 
     public UserResponseDto(User user) {
         this.nickname = user.getNickname();
         this.profileImage = user.getProfileImage();
-        this.rank = user.getRank();
-        this.experience = user.getExperience();
+        this.rankTitle = user.getRankTitle();
+        this.expPoint = user.getExpPoint();
     }
 }

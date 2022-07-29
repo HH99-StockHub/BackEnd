@@ -21,7 +21,7 @@ public class NotificationService {
 
     public void sendPrivateNotificationComment(String userNickname, Long articleUserId, Long articleId, Long commentUserId) {
 
-       if(!articleId.equals(commentUserId)) {
+       if(!articleUserId.equals(commentUserId)) {
            Long userId = articleUserId;
            String message = userNickname + " 님이 회원님의 게시글에 댓글을 달았습니다.";
            boolean check = false;

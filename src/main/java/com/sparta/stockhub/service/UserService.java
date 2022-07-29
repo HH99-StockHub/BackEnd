@@ -126,26 +126,26 @@ public class UserService {
         String token = JwtTokenUtils.generateJwtToken(userDetailsJwt);
 
         String nicknameEncoded = URLEncoder.encode(user.getNickname(), "utf-8");
-        String rankEncoded = URLEncoder.encode(user.getRank(), "utf-8");
+        String rankEncoded = URLEncoder.encode(user.getRankTitle(), "utf-8");
 
         response.addHeader("Authorization", "BEARER " + token);
         response.addHeader("userId", String.valueOf(user.getUserId()));
         response.addHeader("profileImage", user.getProfileImage());
         response.addHeader("nickname", nicknameEncoded);
-        response.addHeader("rank", rankEncoded);
-        response.addHeader("experience", String.valueOf(user.getExperience()));
+        response.addHeader("rankTitle", rankEncoded);
+        response.addHeader("expPoint", String.valueOf(user.getExpPoint()));
     }
 
     // 유저 랭크 업데이트
     @Transactional
     public void updateRank(User user) {
 
-        int exp = user.getExperience();
-        if (exp < 10) user.setRank("신입");
-        else if (exp < 100) user.setRank("초보");
-        else if (exp < 200) user.setRank("중수");
-        else if (exp < 500) user.setRank("고수");
-        else user.setRank("지존");
+        int exp = user.getExpPoint();
+        if (exp < 10) user.setRankTitle("신입");
+        else if (exp < 100) user.setRankTitle("초보");
+        else if (exp < 200) user.setRankTitle("중수");
+        else if (exp < 500) user.setRankTitle("고수");
+        else user.setRankTitle("지존");
 
         userRepository.save(user);
     }

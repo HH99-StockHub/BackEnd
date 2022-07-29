@@ -16,7 +16,7 @@ public class CommentResponseDto {
     private Long userId;
     private String nickname;
     private String profileImage;
-    private String rank;
+    private String rankTitle;
     private String comments;
 
 
@@ -26,7 +26,7 @@ public class CommentResponseDto {
         this.userId = user.getUserId();
         this.nickname = user.getNickname();
         this.profileImage = user.getProfileImage();
-        this.rank = user.getRank();
+        this.rankTitle = user.getRankTitle();
         this.comments = comment.getComments();
     }
 }

@@ -16,7 +16,7 @@ public class ArticleListResponseDto {
     private Long userId;
     private String nickname;
     private String profileImage;
-    private String rank;
+    private String rankTitle;
     private String articleTitle;
     private String stockName;
     private double stockReturn;
@@ -33,7 +33,7 @@ public class ArticleListResponseDto {
         this.userId = article.getUserId();
         this.nickname = user.getNickname();
         this.profileImage = user.getProfileImage();
-        this.rank = user.getRank();
+        this.rankTitle = user.getRankTitle();
         this.articleTitle = article.getArticleTitle();
         this.stockName = article.getStockName();
         this.stockReturn = article.getStockReturn();

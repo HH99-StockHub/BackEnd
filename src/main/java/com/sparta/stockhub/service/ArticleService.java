@@ -88,7 +88,7 @@ public class ArticleService {
         articleRepository.save(article);
 
         User user = userDetails.getUser(); // 경험치 30점 획득
-        user.setExperience(user.getExperience() + 30);
+        user.setExpPoint(user.getExpPoint() + 30);
         userRepository.save(user);
         userService.updateRank(user);
     }
@@ -421,7 +421,7 @@ public class ArticleService {
         for (int i = 0; i < commentList.size(); i++) commentRepository.delete(commentList.get(i));
 
         User user = userDetails.getUser(); // 경험치 30점 감소
-        user.setExperience(user.getExperience() - 30);
+        user.setExpPoint(user.getExpPoint() - 30);
         userRepository.save(user);
         userService.updateRank(user);
     }
@@ -466,7 +466,7 @@ public class ArticleService {
             User user = userRepository.findById(userId).orElseThrow(
                     () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
-            user.setExperience(user.getExperience() + 50);
+            user.setExpPoint(user.getExpPoint() + 50);
             userService.updateRank(user);
             article.setPopularRegTime(LocalDateTime.now());
 
@@ -479,7 +479,7 @@ public class ArticleService {
             User user = userRepository.findById(userId).orElseThrow(
                     () -> new CustomException(ErrorCode.NOT_FOUND_USER)
             );
-            user.setExperience(user.getExperience() - 50);
+            user.setExpPoint(user.getExpPoint() - 50);
             userService.updateRank(user);
         }
     }

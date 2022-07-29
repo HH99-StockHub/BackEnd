@@ -29,17 +29,17 @@ public class User {
     private String profileImage;
 
     @Column(nullable = false)
-    private String rank;
+    private String rankTitle;
 
     @Column(nullable = false)
-    private int experience;
+    private int expPoint;
 
     public User(String username, String password, String nickname, String profileImage) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.profileImage = profileImage;
-        this.rank = "신입";
-        this.experience = 0;
+        this.rankTitle = "신입";
+        this.expPoint = 0;
     }
 }
