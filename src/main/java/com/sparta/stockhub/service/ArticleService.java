@@ -56,15 +56,15 @@ public class ArticleService {
         if (point1.equals("")) throw new CustomException(ErrorCode.BAD_REQUEST_NOTWRITE);
         if (content1.equals("")) throw new CustomException(ErrorCode.BAD_REQUEST_NOTWRITE);
         if (articleTitle.length() > 40) throw new CustomException(ErrorCode.BAD_REQUEST_TITLELENGTH);
-        if (point1.length() > 40) throw new CustomException(ErrorCode.BAD_REQUEST_POINTLENGTH);
-        if (content1.length() > 800) throw new CustomException(ErrorCode.BAD_REQUEST_CONTENTLENGTH);
+        if (point1.length() > 60) throw new CustomException(ErrorCode.BAD_REQUEST_POINTLENGTH);
+        if (content1.length() > 2000) throw new CustomException(ErrorCode.BAD_REQUEST_CONTENTLENGTH);
         if (point2 != null && content2 != null) {
-            if (point2.length() > 40) throw new CustomException(ErrorCode.BAD_REQUEST_POINTLENGTH);
-            if (content2.length() > 800) throw new CustomException(ErrorCode.BAD_REQUEST_CONTENTLENGTH);
+            if (point2.length() > 60) throw new CustomException(ErrorCode.BAD_REQUEST_POINTLENGTH);
+            if (content2.length() > 2000) throw new CustomException(ErrorCode.BAD_REQUEST_CONTENTLENGTH);
         }
         if (point3 != null && content3 != null) {
-            if (point3.length() > 40) throw new CustomException(ErrorCode.BAD_REQUEST_POINTLENGTH);
-            if (content3.length() > 800) throw new CustomException(ErrorCode.BAD_REQUEST_CONTENTLENGTH);
+            if (point3.length() > 60) throw new CustomException(ErrorCode.BAD_REQUEST_POINTLENGTH);
+            if (content3.length() > 2000) throw new CustomException(ErrorCode.BAD_REQUEST_CONTENTLENGTH);
         }
 
         int stockPriceFirst = stockService.getStockPrice(stockName);
