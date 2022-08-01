@@ -81,6 +81,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/articles/**");
         skipPathList.add("GET,/h2-console/**");
         skipPathList.add("POST,/h2-console/**");
+        skipPathList.add("POST,/stock/price");
+        skipPathList.add("POST,/stock/details");
+        skipPathList.add("POST,/stock/chart");
         skipPathList.add("OPTIONS,/");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(skipPathList, "/**");

@@ -4,10 +4,7 @@ import com.sparta.stockhub.domain.Stock;
 import com.sparta.stockhub.dto.responseDto.StockResponseDto;
 import com.sparta.stockhub.service.StockService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,13 +21,13 @@ public class StockController {
     }
 
     // 주식: 종목 현재가 조회
-    @GetMapping("/stock/price")
+    @PostMapping("/stock/price")
     public int getStockPrice(@RequestBody String stockName) {
         return stockService.getStockPrice(stockName);
     }
 
     // 주식: 종목 상세정보 조회
-    @GetMapping("/stock/details")
+    @PostMapping("/stock/details")
     public StockResponseDto getStockDetails(@RequestBody String stockName) {
             return stockService.getStockDetails(stockName);
     }
