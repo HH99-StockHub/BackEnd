@@ -364,7 +364,9 @@ public class ArticleService {
                 checkPopularList(article, loginNickname);
             }
         } else {
-            throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEUP); // 이미 찬성을 한 경우
+            voteUpRepository.delete(oldVote); // 이미 찬성을 한 경우
+            article.setVoteUpCount(article.getVoteUpCount() - 1);
+            checkPopularList(article, loginNickname);
         }
     }
 
@@ -396,7 +398,9 @@ public class ArticleService {
                 checkPopularList(article, loginNickname);
             }
         } else {
-            throw new CustomException(ErrorCode.FORBIDDEN_OLDVOTEDOWN); // 이미 반대를 한 경우
+            voteDownRepository.delete(oldVote); // 이미 반대를 한 경우
+            article.setVoteDownCount(article.getVoteDownCount() - 1);
+            checkPopularList(article, loginNickname);
         }
     }
 
