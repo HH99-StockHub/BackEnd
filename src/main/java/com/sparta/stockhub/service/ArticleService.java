@@ -354,18 +354,18 @@ public class ArticleService {
                 VoteUp myVote = new VoteUp(articleId, loginId); // 이미 반대를 한 경우
                 voteUpRepository.save(myVote);
                 voteDownRepository.delete(oppositeVote);
-                article.setVoteUpCount(article.getVoteUpCount() + 1);
-                article.setVoteDownCount(article.getVoteDownCount() - 1);
+                article.setVoteUpCount(countVoteUp(article));
+                article.setVoteDownCount(countVoteDown(article));
                 checkPopularList(article, loginNickname);
             } else {
                 VoteUp myVote = new VoteUp(articleId, loginId); // 해당 게시글에 투표를 처음 하는 경우
                 voteUpRepository.save(myVote);
-                article.setVoteUpCount(article.getVoteUpCount() + 1);
+                article.setVoteUpCount(countVoteUp(article));
                 checkPopularList(article, loginNickname);
             }
         } else {
             voteUpRepository.delete(oldVote); // 이미 찬성을 한 경우
-            article.setVoteUpCount(article.getVoteUpCount() - 1);
+            article.setVoteUpCount(countVoteUp(article));
             checkPopularList(article, loginNickname);
         }
     }
@@ -388,18 +388,18 @@ public class ArticleService {
                 VoteDown myVote = new VoteDown(articleId, loginId); // 이미 찬성을 한 경우
                 voteDownRepository.save(myVote);
                 voteUpRepository.delete(oppositeVote);
-                article.setVoteDownCount(article.getVoteDownCount() + 1);
-                article.setVoteUpCount(article.getVoteUpCount() - 1);
+                article.setVoteDownCount(countVoteDown(article));
+                article.setVoteUpCount(countVoteUp(article));
                 checkPopularList(article, loginNickname);
             } else {
                 VoteDown myVote = new VoteDown(articleId, loginId); // 해당 게시글에 투표를 처음 하는 경우
                 voteDownRepository.save(myVote);
-                article.setVoteDownCount(article.getVoteDownCount() + 1);
+                article.setVoteDownCount(countVoteDown(article));
                 checkPopularList(article, loginNickname);
             }
         } else {
             voteDownRepository.delete(oldVote); // 이미 반대를 한 경우
-            article.setVoteDownCount(article.getVoteDownCount() - 1);
+            article.setVoteDownCount(countVoteDown(article));
             checkPopularList(article, loginNickname);
         }
     }
