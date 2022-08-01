@@ -15,7 +15,7 @@ public class ChartController {
     private final ChartService chartService;
 
     // 차트: 종목 차트 조회
-    @GetMapping("/chart/")
+    @GetMapping("/chart")
     public Chart getChart(@RequestBody String stockName) {
         return chartService.getChart(stockName);
     }

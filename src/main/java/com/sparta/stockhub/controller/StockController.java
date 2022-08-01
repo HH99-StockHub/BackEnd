@@ -24,13 +24,13 @@ public class StockController {
     }
 
     // 주식: 종목 현재가 조회
-    @GetMapping("/stock/price/")
+    @GetMapping("/stock/price")
     public int getStockPrice(@RequestBody String stockName) {
         return stockService.getStockPrice(stockName);
     }
 
     // 주식: 종목 상세정보 조회
-    @GetMapping("/stock/details/")
+    @GetMapping("/stock/details")
     public StockResponseDto getStockDetails(@RequestBody String stockName) {
             return stockService.getStockDetails(stockName);
     }
