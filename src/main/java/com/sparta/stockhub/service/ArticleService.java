@@ -23,6 +23,11 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -94,62 +99,156 @@ public class ArticleService {
     }
 
     // 게시글 검색
+//    public Page<ArticleListResponseDto> searchArticle(String keywords, int page, int size) {
+//        String keywordsTrimmed = keywords.trim();
+//        List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
+//
+//        // A. 검색어에 공백이 없는 경우
+//        if (!keywordsTrimmed.contains(" ")) {
+//            List<Article> articleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed);
+//
+//            for (int i = 0; i < articleList.size(); i++) {
+//                User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
+//                        () -> new CustomException(ErrorCode.NOT_FOUND_USER)
+//                );
+//                int commentCount = countComment(articleList.get(i));
+//
+//                responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
+//            }
+//        }
+//        // B. 검색어에 공백이 있는 경우
+//        else {
+//            String[] keywordsSplitted = keywordsTrimmed.split(" ");
+//
+//            // 1. 분리된 검색어로 게시글 검색
+//            for (String keyword : keywordsSplitted) {
+//                List<Article> articleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
+//
+//                for (int i = 0; i < articleList.size(); i++) {
+//                    if (keyword.equals("")) continue; // 공백이 2번 이상 연속된 경우 생기는 검색어 skip
+//
+//                    User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
+//                            () -> new CustomException(ErrorCode.NOT_FOUND_USER)
+//                    );
+//                    int commentCount = countComment(articleList.get(i));
+//
+//                    responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
+//                }
+//            }
+//
+//            // 2. 중복 검색 결과 제거
+//            for (int i = 0; i < responseDtoList.size(); i++) {
+//                for (int j = i + 1; j < responseDtoList.size(); j++) {
+//                    if (responseDtoList.get(i).getUserId().equals(responseDtoList.get(j).getUserId()) &&
+//                            responseDtoList.get(i).getCreatedAt() == responseDtoList.get(j).getCreatedAt())
+//                        responseDtoList.remove(i);
+//                }
+//            }
+//
+//            // 3. 게시글 제목이 분리 전 검색어를 통째로 포함하는 경우 해당 게시글을 검색 결과의 상단으로 이동
+//            for (int i = 0; i < responseDtoList.size(); i++) {
+//                if (responseDtoList.get(i).getArticleTitle().contains(keywordsTrimmed)) {
+//                    responseDtoList.add(0, responseDtoList.get(i));
+//                    responseDtoList.remove(i + 1);
+//                }
+//            }
+//        }
+//
+//        Pageable pageable = PageRequest.of(page, size);
+//
+//        final int start = (int) pageable.getOffset();
+//        final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
+//        final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
+//
+//        return resultpage;
+//    }
+
+    //--------------------------------//
+    //게시글 검색 업그레이드
+
     public Page<ArticleListResponseDto> searchArticle(String keywords, int page, int size) {
+
         String keywordsTrimmed = keywords.trim();
+        System.out.println(keywordsTrimmed);
+        List<Article> responseList = new ArrayList<>();
+        List<Article> keywordsSplitList = new ArrayList<>();
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
 
-        // A. 검색어에 공백이 없는 경우
-        if (!keywordsTrimmed.contains(" ")) {
-            List<Article> articleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed);
+        // 1순위 검색어가 그대로 제목이나 종목명에 포함된 게시글
+        List<Article> articleList1 = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrderByCreatedAtDesc(keywordsTrimmed, keywordsTrimmed);
+        responseList.addAll(articleList1);
 
-            for (int i = 0; i < articleList.size(); i++) {
-                User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                        () -> new CustomException(ErrorCode.NOT_FOUND_USER)
-                );
-                int commentCount = countComment(articleList.get(i));
 
-                responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
-            }
-        }
-        // B. 검색어에 공백이 있는 경우
-        else {
+        // 2순위 검색어가 그대로 투자포인트나 내용에 포함된 게시글
+        List<Article> articleList2 = articleRepository.findAllByPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed);
+        responseList.addAll(articleList2);
+
+        if (keywordsTrimmed.contains(" ")) {
             String[] keywordsSplitted = keywordsTrimmed.split(" ");
 
-            // 1. 분리된 검색어로 게시글 검색
             for (String keyword : keywordsSplitted) {
-                List<Article> articleList = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
 
-                for (int i = 0; i < articleList.size(); i++) {
-                    if (keyword.equals("")) continue; // 공백이 2번 이상 연속된 경우 생기는 검색어 skip
+                System.out.println(keyword);
 
-                    User user = userRepository.findById(articleList.get(i).getUserId()).orElseThrow(
-                            () -> new CustomException(ErrorCode.NOT_FOUND_USER)
-                    );
-                    int commentCount = countComment(articleList.get(i));
+                if (keyword.equals("")) continue;
 
-                    responseDtoList.add(new ArticleListResponseDto(articleList.get(i), user, commentCount));
+                List<Article> articleList3 = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
+                keywordsSplitList.addAll(articleList3);
+
+            }
+
+            List<Long> articleIdList = new ArrayList<>();
+            Integer count=0;
+            for (String keyword : keywordsSplitted){
+                if(keyword!="") count+=1;
+            }
+
+            System.out.println(count);
+
+            for(int i = 0; i < keywordsSplitList.size(); i ++){
+                articleIdList.add(keywordsSplitList.get(i).getArticleId());
+            }
+
+            Stream<Long> longStream = articleIdList.stream();
+
+            Map<Long, Integer> map = longStream.collect(
+                    Collectors.toMap(Function.identity(), value -> 1, Integer::sum)
+            );
+
+            System.out.println("print map  " + map);
+
+            List<Long> newList = articleIdList.stream().distinct().collect(Collectors.toList());
+
+            System.out.println("print newList " + newList);
+
+            for(int i = 0; i < newList.size(); i ++) {
+                if (map.get(newList.get(i)) == count) {
+                    List<Article> article = articleRepository.findAllByArticleId(newList.get(i));
+                    responseList.addAll(article);
                 }
             }
 
-            // 2. 중복 검색 결과 제거
-            for (int i = 0; i < responseDtoList.size(); i++) {
-                for (int j = i + 1; j < responseDtoList.size(); j++) {
-                    if (responseDtoList.get(i).getUserId().equals(responseDtoList.get(j).getUserId()) &&
-                            responseDtoList.get(i).getCreatedAt() == responseDtoList.get(j).getCreatedAt())
-                        responseDtoList.remove(i);
+            for(int i = 0; i < newList.size(); i ++) {
+                if (map.get(newList.get(i)) == count-1) {
+                    List<Article> article = articleRepository.findAllByArticleId(newList.get(i));
+                    responseList.addAll(article);
                 }
             }
 
-            // 3. 게시글 제목이 분리 전 검색어를 통째로 포함하는 경우 해당 게시글을 검색 결과의 상단으로 이동
-            for (int i = 0; i < responseDtoList.size(); i++) {
-                if (responseDtoList.get(i).getArticleTitle().contains(keywordsTrimmed)) {
-                    responseDtoList.add(0, responseDtoList.get(i));
-                    responseDtoList.remove(i + 1);
-                }
-            }
         }
 
-        Pageable pageable = PageRequest.of(page, size);
+        List<Article> resultList = responseList.stream().distinct().collect(Collectors.toList());
+
+        for (int i = 0; i < resultList.size(); i++) {
+                User user = userRepository.findById(resultList.get(i).getUserId()).orElseThrow(
+                        () -> new CustomException(ErrorCode.NOT_FOUND_USER)
+                );
+                int commentCount = countComment(resultList.get(i));
+
+                responseDtoList.add(new ArticleListResponseDto(resultList.get(i), user, commentCount));
+            }
+
+                Pageable pageable = PageRequest.of(page, size);
 
         final int start = (int) pageable.getOffset();
         final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());

@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     Optional<Article> findByArticleId(Long articleId);
 
+    List<Article> findAllByArticleId(Long articleId);
+
     List<Article> findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(String title, String stockname, String point1, String point2, String point3, String content1, String content2, String content3);
 
     List<Article> findAllByOrderByCreatedAtDesc();
@@ -23,4 +25,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     List<Article> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 
+    List<Article> findAllByArticleTitleContainingOrStockNameContainingOrderByCreatedAtDesc(String keywordsTrimmed, String keywordsTrimmed1);
+
+    List<Article> findAllByPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(String keywordsTrimmed, String keywordsTrimmed1, String keywordsTrimmed2, String keywordsTrimmed3, String keywordsTrimmed4, String keywordsTrimmed5);
 }
