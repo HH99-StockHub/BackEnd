@@ -168,10 +168,16 @@ public class ArticleService {
 
     public Page<ArticleListResponseDto> searchArticle(String keywords, int page, int size) {
 
+        //검색어의 좌우 공백 제거
         String keywordsTrimmed = keywords.trim();
-        System.out.println(keywordsTrimmed);
+
+        //검색결과 취합에 사용할 리스트 선언
         List<Article> responseList = new ArrayList<>();
+
+        //검색결과 가공에 사용할 리스트 선언
         List<Article> keywordsSplitList = new ArrayList<>();
+
+        //검색결과 반환에 사용할 리스트 선언
         List<ArticleListResponseDto> responseDtoList = new ArrayList<>();
 
         // 1순위 검색어가 그대로 제목이나 종목명에 포함된 게시글
@@ -183,62 +189,77 @@ public class ArticleService {
         List<Article> articleList2 = articleRepository.findAllByPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed, keywordsTrimmed);
         responseList.addAll(articleList2);
 
+        //검색어에 공백, 띄어쓰기가 포함된 경우 각각의 단어로 검색
         if (keywordsTrimmed.contains(" ")) {
+
+            //공백을 기준으로 검색어를 분리, 각각의 단어를 요소로 가진 배열 생성
             String[] keywordsSplitted = keywordsTrimmed.split(" ");
 
+            //각각의 단어마다 검색할 반복문
             for (String keyword : keywordsSplitted) {
 
-                System.out.println(keyword);
-
+                //검색어에 공백, 띄어쓰기가 연속 2번 이상 들어간 경우
+                //""을 검색단어로 인식하여 모든 게시글들을 가져오는 현상 발생
+                //이를 방지하기 위해 continue
                 if (keyword.equals("")) continue;
 
                 List<Article> articleList3 = articleRepository.findAllByArticleTitleContainingOrStockNameContainingOrPoint1ContainingOrPoint2ContainingOrPoint3ContainingOrContent1ContainingOrContent2ContainingOrContent3ContainingOrderByCreatedAtDesc(keyword, keyword, keyword, keyword, keyword, keyword, keyword, keyword);
-                keywordsSplitList.addAll(articleList3);
 
+                //단어별 검색결과 게시글 가공 준비
+                keywordsSplitList.addAll(articleList3);
             }
 
+            //게시글 중복여부 판별에 사용할 게시글번호 리스트 선언
             List<Long> articleIdList = new ArrayList<>();
+
+            //검색어를 쪼갠 단어의 개수를 숫자로 선언
             Integer count=0;
+
+            //검색어 단어의 수 만큼 count 값 부여
             for (String keyword : keywordsSplitted){
                 if(keyword!="") count+=1;
             }
 
-            System.out.println(count);
-
+            // 단어별 검색결과 게시글들로 게시글 번호리스트 생성
             for(int i = 0; i < keywordsSplitList.size(); i ++){
                 articleIdList.add(keywordsSplitList.get(i).getArticleId());
             }
 
-            Stream<Long> longStream = articleIdList.stream();
+            //게시글 번호 리스트를 스트림으로 변환
+            Stream<Long>  articleIdStream = articleIdList.stream();
 
-            Map<Long, Integer> map = longStream.collect(
-                    Collectors.toMap(Function.identity(), value -> 1, Integer::sum)
+            // 요소가 {key: 게시글 번호 = value: 숫자}인 맵 생성
+            Map<Long, Integer> map =  articleIdStream.collect(
+                    Collectors.toMap(Function.identity()/*게시글 번호*/, value -> 1, Integer::sum/*숫자 1, 똑같은 게시글 번호가 추가될 때 마다 1씩 증가*/)
             );
+            //게시글 번호 = 숫자 형태의 map이 생성 되는데 ?번 개시글은  keywordsSplitList 리스트 안에 숫자?번 포함되어 있다는 뜻이다
 
-            System.out.println("print map  " + map);
+            //articleIdList 의 중복을 제거한 IdList 생성
+            List<Long> IdList = articleIdList.stream().distinct().collect(Collectors.toList());
 
-            List<Long> newList = articleIdList.stream().distinct().collect(Collectors.toList());
-
-            System.out.println("print newList " + newList);
-
-            for(int i = 0; i < newList.size(); i ++) {
-                if (map.get(newList.get(i)) == count) {
-                    List<Article> article = articleRepository.findAllByArticleId(newList.get(i));
+            //게시글이 keywordsSplitList 에 포함된 횟수가 검색어를 쪼갠 단어의 수와 같다면 그 게시글은 검색어를 쪼갠 모든 단어가 포함 되어있다는 뜻
+            for(int i = 0; i < IdList.size(); i ++) {
+                if (map.get(IdList.get(i)) == count) {
+                    List<Article> article = articleRepository.findAllByArticleId(IdList.get(i));
                     responseList.addAll(article);
                 }
             }
 
-            for(int i = 0; i < newList.size(); i ++) {
-                if (map.get(newList.get(i)) == count-1) {
-                    List<Article> article = articleRepository.findAllByArticleId(newList.get(i));
+            //검색어를 쪼갠 총 단어수가 3 이라면 단어 2개 포함된 것 까지도 반환하고자 함
+            //나중에 더 업그레이드 할 기회가 된다면 누락된 단어를 표시할 수 있을지도? 지금당장 아이디어는 안떠오르지만 성능나쁜 코드로 할 수는 있을 듯
+            for(int i = 0; i < IdList.size(); i ++) {
+                if (map.get(IdList.get(i)) == count-1) {
+                    List<Article> article = articleRepository.findAllByArticleId(IdList.get(i));
                     responseList.addAll(article);
                 }
             }
 
         }
 
+        //반환할 리스트의 중복 제거
         List<Article> resultList = responseList.stream().distinct().collect(Collectors.toList());
-
+        
+        //반환을 위한 형태 변환
         for (int i = 0; i < resultList.size(); i++) {
                 User user = userRepository.findById(resultList.get(i).getUserId()).orElseThrow(
                         () -> new CustomException(ErrorCode.NOT_FOUND_USER)
@@ -248,12 +269,14 @@ public class ArticleService {
                 responseDtoList.add(new ArticleListResponseDto(resultList.get(i), user, commentCount));
             }
 
-                Pageable pageable = PageRequest.of(page, size);
+        //List 를 Page 로 변환(꼼수 페이지네이션)
+        Pageable pageable = PageRequest.of(page, size);
 
         final int start = (int) pageable.getOffset();
         final int end = Math.min((start + pageable.getPageSize()), responseDtoList.size());
         final Page<ArticleListResponseDto> resultpage = new PageImpl<>(responseDtoList.subList(start, end), pageable, responseDtoList.size());
 
+        //결과 페이지 반환
         return resultpage;
     }
 
