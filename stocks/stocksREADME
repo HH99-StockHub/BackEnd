@@ -1,0 +1,10 @@
+요는 PyKiwoom으로 키움증권에 등록된 3,400여 개의 종목 리스트를 업데이트 한 후, Yfinance를 통해 이들의 주가 데이터를 불러와 MonngoDB에 저장하는 것입니다.
+
+ChartsGlobalUpdate.py: PyKiwoom 활용하여 전 종목 1년치 차트 데이터 업데이트
+ChartsListUpdate.py: PyKiwoom 활용하여 전 종목 리스트 Charts 컬렉션에 추가
+IndicesListUpdate.py: Yahoo Finance 크롤링하여 주요 인덱스 리스트 Indices 컬렉션에 추가
+MarketHourRun.py: Yfinance 및 Yahoo Finance 크롤링 혼합하여 장중 전 종목 주가 데이터 및 인덱스 업데이트
+StocksGlobalUpdate.py: PyKiwoom 활용하여 전 종목 주가 데이터 업데이트
+StocksListUpdate.py: PyKiwoom 활용하여 전 종목 리스트 Stocks 컬렉션에 추가
+
+PyKiwoom 사용 관련 참고: https://wikidocs.net/book/1173
