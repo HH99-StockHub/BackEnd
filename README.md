@@ -114,5 +114,5 @@ Stock Hub는 내가 선택한 종목에 대한 매수 의견을 공유하는 장
     2. stream distinct를 통해 중복 게시글 제거
     연관성 검사 과정에서의 지연을 예방할 방안 모색중
     
-  ## 🧾 API 및 ERD 설계
+  ## 🧾 API
   API 설계 : https://www.notion.so/be889f10852c4aed91ba2bd00b5c4f20?v=42e0adb20f9147648addf40aad7e0301
